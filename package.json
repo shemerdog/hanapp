@@ -1,0 +1,25 @@
+{
+  "name": "example-create-react-app-express",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"npm run-script server\" \"npm run-script client\""
+  },
+  "dependencies": {
+    "@material-ui/core": "^1.4.2",
+    "@material-ui/icons": "^2.0.0",
+    "@material-ui/lab": "^1.0.0-alpha.11",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongojs": "^2.6.0",
+    "mui-datatables": "^2.0.0-beta-31",
+    "nodemon": "^1.18.2",
+    "react-dom": "^16.4.1",
+    "react-rangeslider": "^2.2.0",
+    "react-router-dom": "^4.3.1"
+  },
+  "devDependencies": {
+    "concurrently": "^3.6.1"
+  }
+}
