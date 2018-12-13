@@ -1,1 +1,1 @@
-bler client side
+client side
