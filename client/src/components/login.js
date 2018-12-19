@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
+import FacebookLogin from "react-facebook-login";
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,6 +11,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import LockIcon from '@material-ui/icons/LockOutlined';
+
 
 
 class Login extends Component {
@@ -32,13 +34,17 @@ class Login extends Component {
   handleClick(event){
     const {userName, password} = this.state;
     if ( userName.length > 2  && password.length > 2 ) {
-      this.props.loginData.handleLogin();
+      this.props.loginData.handleLogin(userName, "123", "");
     }
+  };
+
+  handleFBClick = res => {
+    this.props.loginData.handleLogin(res.name, res.userID, res.picture.data.url, res.email );
   };
 
   render() {
     if (this.props.loginData.login === true) {
-      return <Redirect to='/table/persons' />
+      return <Redirect to='/patients-list' />
     }
     return (
       <div>
@@ -62,6 +68,16 @@ class Login extends Component {
               </Typography>
               <br/>
               <Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>Login</Button>
+              <div>
+                <FacebookLogin
+                  appId="384903288929031"
+                  autoLoad={false}
+                  fields="name,email,picture"
+                  onClick={this.componentClicked}
+                  onFailure={()=>{return} }
+                  callback={this.handleFBClick}
+                />
+              </div>
             </Paper>
       </div>
     );

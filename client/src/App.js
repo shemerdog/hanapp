@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom'
 import Navbar from './components/navbar';
 import Login from './components/login';
-import Persons from './components/persons';
-import TablePage from './components/tablepage';
-import Networks from './components/networks';
-import Devices from './components/devices';
-import Control from './components/control';
+import PatientsList from './components/patients-list';
+import PatientDetails from './components/patient-details';
 import Error from './components/error';
 
 import './App.css';
@@ -15,35 +12,56 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state={
-      login: true, //need to change to false before production
+      login: false, //need to change to false before production
+      userID: "123",
+      userName: "נסיון",
+      userPic: "",
+      userEmail:"",
+      loading: false,
+      patientId: "",
     }
     this.handleLogin = this.handleLogin.bind(this);
+    this.startLoading = this.startLoading.bind(this);
+    this.stopLoading = this.stopLoading.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-
+    this.enterPetientDetails = this.enterPetientDetails.bind(this);
   };
 
-  handleLogin() {
-    this.setState({login: true})
+  handleLogin(userName, userID, userPic, userEmail) { //need to add local login with passwork and check with server
+    this.setState({login: true, userName: userName, userID: userID, userPic: userPic, userEmail: userEmail })
   };
-
   handleLogout() {
-    this.setState({login: false})
+    this.setState({login: false, userName: ""})
   };
+  startLoading() {
+    this.setState({loading: true})
+  };
+  stopLoading() {
+    this.setState({loading: false})
+  };
+  enterPetientDetails( patientId) {
+    this.setState({patientId: patientId})
+  }
 
 
   render() {
-    const loginData ={ login: this.state.login, handleLogin: this.handleLogin };
+    const loginData ={  login: this.state.login,
+                        loading: this.state.loading,
+                        handleLogin: this.handleLogin,
+                        stopLoading: this.stopLoading,
+                        startLoading: this.startLoading
+                      };
+    const dataForPatient = {  login: this.state.login,
+                              userID: this.state.userID,
+                            };
     return (
-      <div className="App">
-        <Navbar login={this.state.login} handleLogout={this.handleLogout} />
+      <div dir="rtl" className="App">
+        <Navbar login={this.state.login} useName={this.state.userName} userPic={this.state.userPic} handleLogout={this.handleLogout} />
         <Switch>
           <Route exact path='/' render={(props) => <Login  loginData={loginData} {...props} /> }/>
           <Route path='/login' render={(props) => <Login loginData={loginData} {...props} /> }/>
-          <Route path='/events' render={(props) => <Events  login={this.state.login} {...props} /> }/>
-          <Route path='/persons' render={(props) => <Persons  login={this.state.login} {...props} /> }/>
-          <Route path='/networks' render={(props) => <Networks  login={this.state.login} {...props} /> }/>
-          <Route path='/tergets' render={(props) => <Tergets  login={this.state.login} {...props} /> }/>
-          <Route path='/control' render={(props) => <Control  login={this.state.login} {...props} /> }/>
+          <Route path='/patients-list' render={(props) => <PatientsList  data={dataForPatient} {...props} /> }/>
+          <Route path='/patient-details/:patientId' render={(props) => <PatientDetails  data={dataForPatient} {...props} /> }/>
           <Route render={(props) => <Error  {...props} /> }/>
         </Switch>
       </div>

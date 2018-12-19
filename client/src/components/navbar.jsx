@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import { Link } from 'react-router-dom'
 import {AppBar} from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,13 +9,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = {
-  contained: {
+  logout: {
     position: 'absolute',
-    right:  "1vw",
+    left:  "1vw",
     top: "1vh",
-    fontSize: 10,
-    width: "7vw",
-    height: "5vh"
+    fontSize: "0.8em",
+  },
+  avatar: {
+  	float: "right",
+    margin: "0 1vw",
   }
 };
 
@@ -42,20 +44,23 @@ class Navbar extends Component {
 	componentWillUnmount() {
 		if (this.timeout) {clearTimeout(this.timeout)}
 	};
+	renderLogout() {
+		return (
+			<span style={styles.logout}>
+				<span>שלום {this.props.useName}</span> { this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName}/> }<Button color="secondary"  onClick={this.props.handleLogout} variant="contained">Logout</Button>
+			</span>
+		)
+	}
 
 	render(){
 		return (
 		  <AppBar position="static">
 		  <Toolbar>
-		      <div className="logo" style={{margin:"0.5vw"}}>BJNHV</div>
+		      <div className="logo" style={{margin:"0.5vw"}}>HanApp</div>
 		      <div className="navigtion-bar" style={{width: "70vw"}}>
-		        <Link to='/table/persons' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Persons</Button></Link>
-		        <Link to='/table/events' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Events</Button></Link>
-		        <Link to='/table/networks' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Networks</Button></Link>
-		        <Link to='/table/devices' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Devices</Button></Link>
-		        <Link to='/control' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Control</Button></Link>
+		        <Link to='/patients-list' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Patients List</Button></Link>
 		      </div>
-		      { this.props.login && <Button color="secondary" style={styles.contained} onClick={this.props.handleLogout} variant="contained">Logout</Button>}
+		      { this.props.login && this.renderLogout()}
 		    </Toolbar>
 		    <Dialog
 					open={this.state.dialogOpen}
