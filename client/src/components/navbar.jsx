@@ -47,7 +47,7 @@ class Navbar extends Component {
 	renderLogout() {
 		return (
 			<span style={styles.logout}>
-				<span>שלום {this.props.useName}</span> { this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName}/> }<Button color="secondary"  onClick={this.props.handleLogout} variant="contained">Logout</Button>
+				<span>שלום {this.props.useName}</span> { this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> }<Button color="secondary"  onClick={this.props.handleLogout} variant="contained">Logout</Button>
 			</span>
 		)
 	}

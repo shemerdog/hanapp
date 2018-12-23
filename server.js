@@ -11,17 +11,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-getPatientDataFromDb = (res, userID, patientId) => {
+getPatientDataFromDb = (res, userID, patientId) => { //we use userId for permisson or dedicated DB. we will not return it
 	let response = {}; 
-	response.data = {firstName: "נחמיה", lastName: "לילי", test: patientId};
-	// let response = {};
-	// Db.patientsList.find( (err,docs) =>  {
-	// 	response.data = docs.map( doc => [ doc.serviceName	, doc.name, doc.serviceStatus ] );
-	// 	console.log("control data sent: ");
-	// 	console.log(response)
-	// 	res.json(response);
-	// })
-	console.log("control data sent: ");
+	response.data = [{key: "firstName", value: "נחמיה"}, {key: "lastName", value: "לילי"}, {key: "patientId", value: patientId} ];
+	// need to get the data from DB here...
+	//
+	console.log("Patient data sent: ");
 	console.log(response)
 	res.json(response)
 
@@ -38,14 +33,7 @@ app.get('/api/patient-details', (req, res) => {
 getPatientsListFromDb = (res) => {
 	let response = {}; 
 	response.data = [{firstName: "נחמיה", lastName: "לילי", id: 123123},{firstName: "שמר", lastName: "דוג", id: 321123},{firstName: "יהודה", lastName: "שיט", id: 321321}];
-	// let response = {};
-	// Db.patientsList.find( (err,docs) =>  {
-	// 	response.data = docs.map( doc => [ doc.serviceName	, doc.name, doc.serviceStatus ] );
-	// 	console.log("data sent: ");
-	// 	console.log(response)
-	// 	res.json(response);
-	// })
-	console.log("control data sent: ");
+	console.log("patients list sent: ");
 	console.log(response)
 	res.json(response)
 
