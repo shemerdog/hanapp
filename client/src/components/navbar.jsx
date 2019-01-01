@@ -4,21 +4,26 @@ import {AppBar} from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
+import Home from '@material-ui/icons/Home';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = {
-  logout: {
-    position: 'absolute',
-    left:  "1vw",
-    top: "1vh",
+  login:{position: 'fixed', left:  "1vw", top:'0.5vh'},
+  avatar: {float: "right", margin: "0 1vw"},
+  welcome: {
     fontSize: "0.8em",
+  	position: 'fixed',
+  	left:  "2vw",
+  	top: '30px',
+  	display: 'inline-block',
+  	width: '60vw',
+  	overflow: 'hidden',
+  	whiteSpace: 'nowrap',
+  	textAlign: 'left'
   },
-  avatar: {
-  	float: "right",
-    margin: "0 1vw",
-  }
 };
 
 class Navbar extends Component {
@@ -45,11 +50,15 @@ class Navbar extends Component {
 		if (this.timeout) {clearTimeout(this.timeout)}
 	};
 	renderLogout() {
-		return (
-			<span style={styles.logout}>
-				<span>שלום {this.props.useName}</span> { this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> }<Button color="secondary"  onClick={this.props.handleLogout} variant="contained">Logout</Button>
-			</span>
-		)
+		if (this.props.login){
+			return (
+				<Fragment>
+					<Button style={styles.login} color="inherit" onClick={this.props.handleLogout}>Logout</Button>
+					{ this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> }
+					<div style={styles.welcome}>שלום {this.props.useName}</div>
+					</Fragment>
+			)
+		} else return( <Link to='/login' style={styles.login}><Button>Login</Button></Link>)
 	}
 
 	render(){
@@ -57,10 +66,12 @@ class Navbar extends Component {
 		  <AppBar position="static">
 		  <Toolbar>
 		      <div className="logo" style={{margin:"0.5vw"}}>HanApp</div>
-		      <div className="navigtion-bar" style={{width: "70vw"}}>
-		        <Link to='/patients-list' onClick={this.handleOnClick}><Button style={{margin:"0.5vw"}} variant="contained">Patients List</Button></Link>
-		      </div>
-		      { this.props.login && this.renderLogout()}
+		      <Link to='/patients-list'>
+			      <IconButton >
+							<Home />
+						</IconButton>
+					</Link>
+		      {this.renderLogout()}
 		    </Toolbar>
 		    <Dialog
 					open={this.state.dialogOpen}

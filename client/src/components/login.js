@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from 'react-google-login';
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -12,7 +10,11 @@ import FormControl from '@material-ui/core/FormControl';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import LockIcon from '@material-ui/icons/LockOutlined';
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 
 class Login extends Component {
@@ -21,6 +23,7 @@ class Login extends Component {
 		this.state={
 			userName:'',
 			password:'',
+			dialogOpen: false,
 		}
 		this.handleChange = this.handleChange.bind(this);
 
@@ -39,12 +42,22 @@ class Login extends Component {
 		}
 	};
 
+	closeDialog = () => {
+		this.setState({ dialogOpen: false });
+	};
+
+	openDialog = () => {
+		this.setState({ dialogOpen: true });
+	};
+
 	handleFBClick = res => {
+		this.props.loginData.stopLoading()
 		console.log("got FB res");
 		console.log(res)
 		this.props.loginData.handleLogin(res.name, res.userID, res.picture.data.url, res.email );
 	};
 	handleGoogleClick = res => {
+		this.props.loginData.stopLoading()
 		const userData = res.profileObj;
 		console.log("got google res");
 		console.log(res);
@@ -64,21 +77,23 @@ class Login extends Component {
 								</Avatar>
 							</div>
 							<FormControl style={style.margin}>
-								<InputLabel htmlFor="name-simple">Username</InputLabel>
+								<InputLabel style={style.label} htmlFor="name-simple">שם משתמש</InputLabel>
 								<Input name="userName" value={this.state.userName} onChange={this.handleChange} />
 							</FormControl>
 							<br/>
 							<FormControl style={style.margin}>
-								<InputLabel htmlFor="pass-simple">Password</InputLabel>
+								<InputLabel style={style.label} htmlFor="pass-simple">סיסמה</InputLabel>
 								<Input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
 							</FormControl>
-							<Typography style={style.leftText} variant="caption">
-								forgot your password?
+							<Typography style={style.leftText} variant="caption" onClick={this.openDialog}>
+								שכחת את הסיסמה?
 							</Typography>
 							<br/>
-							<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>Login</Button>
+							<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>התחבר</Button>
+							{this.props.loginData.loading && <CircularProgress size={20}/>}
 							<div>
 								<FacebookLogin
+									onClick={this.props.loginData.startLoading}
 									appId="384903288929031"
 									autoLoad={false}
 									size="medium"
@@ -90,12 +105,24 @@ class Login extends Component {
 							</div>
 							<div>
 								<GoogleLogin
+									onClick={this.props.loginData.startLoading}
 									clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
 									onSuccess={this.handleGoogleClick}
 									onFailure={(res)=>{console.log(res)} }
 								/>
 							</div>
 						</Paper>
+						<Dialog dir="rtl"
+							open={this.state.dialogOpen}
+							onClose={this.closeDialog}
+						>
+							<DialogTitle>{"חבל מאוד!"}</DialogTitle>
+							<DialogContent>
+								<DialogContentText>
+									בעיה שלך, פעם הבאה אל תשכח.
+								</DialogContentText>
+							</DialogContent>
+						</Dialog>
 			</div>
 		);
 	}
@@ -104,6 +131,7 @@ const style = {
 	margin: { margin: "1vw" },
 	leftText: {textAlign: "center", margin: "auto",     width: "fit-content"},
 	paper: { padding: "2vh 2vw", margin: "10vh auto", width: "fit-content"},
-	avatar: {padding: "1vh",  margin: "auto"}
+	avatar: {padding: "1vh",  margin: "auto"},
+	label: {width: '100%'}
 };
 export default Login;

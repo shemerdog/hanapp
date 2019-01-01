@@ -2,16 +2,7 @@ import React ,{ Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import Input from '@material-ui/core/Input';
@@ -23,17 +14,18 @@ import Button from '@material-ui/core/Button';
 
 
 const styles = {
-  list: {
-    width: '100%',
-    maxWidth: 360,
-    margin: 'auto',
-  },
-  ListItem: {
-  	textAlign: 'start'
-  },
-  button: {
-  	margin: '0 2vw',
-  }
+	list: {
+		width: '100%',
+		maxWidth: 260,
+		margin: 'auto',
+	},
+	ListItem: {
+		textAlign: 'start'
+	},
+	button: {
+		margin: '0 2vw',
+	},
+	edit:{position: 'absolute', left: "3vw", bottom: '3vh'},
 };
 
 
@@ -45,10 +37,12 @@ class PatientDetails extends Component {
 			data: [],
 			edit:false,
 			}
-    this.renderDetailesRow = this.renderDetailesRow.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleDismissChanges = this.handleDismissChanges.bind(this);
-    this.handleSaveChanges = this.handleSaveChanges.bind(this);
+		this.renderDetailesRow = this.renderDetailesRow.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+		this.handleDismissChanges = this.handleDismissChanges.bind(this);
+		this.handleSaveChanges = this.handleSaveChanges.bind(this);
+		this.setFormData = this.setFormData.bind(this);
+
 	};
 
 	renderDetailesRow( item, index ) {
@@ -62,20 +56,11 @@ class PatientDetails extends Component {
 		else{
 			return(
 				<ListItem key={index} style={styles.ListItem}>
-	        <ListItemText
-	          primary={item.key}
-	          secondary={item.value}
-	        />
-	        <ListItemSecondaryAction onClick={()=> {
-	        																	console.log("edit clicked")
-	        																	this.setState(prevState => ({
-																							edit: !prevState.edit
-																						}))}}>
-	          <IconButton>
-	            <EditIcon />
-	          </IconButton>
-	        </ListItemSecondaryAction>
-	      </ListItem>
+					<ListItemText
+						primary={item.key}
+						secondary={item.value}
+					/>
+				</ListItem>
 			)
 		}
 	};
@@ -84,23 +69,23 @@ class PatientDetails extends Component {
 		let change = {}
 		change.data = [...this.state.data]
 		change.data[event.target.name].value = event.target.value;
-		this.setState(change, ()=> {
-			console.log(this.state.data)
-			console.log(this.orgData)
-		})
+		this.setState(change)
 	};
 
 	handleSaveChanges(){
 		this.setState({edit: false});
+		//send data to DB
 	};
 	handleDismissChanges(){
-		this.componentDidMount();
+		this.setFormData();
 		this.setState({edit: false});
 	}
-
-	componentDidMount() {
+	setFormData() {
 		this.callApi()
 		.then( res => { this.setState( { data: res.data } )} )
+	}
+	componentDidMount() {
+		this.setFormData();
 	};
 
 	callApi = async () => {
@@ -113,32 +98,33 @@ class PatientDetails extends Component {
 	render() {
 		const { data, edit } = this.state;
 
-		if ( this.props.login === false ) {
+		if ( this.props.data.login === false ) {
 				return <Redirect to='/login' />
 			}
 			else {
 				return (
 					<div>
-						 <Grid item xs={12} md={6}>
-	            <Typography variant="title">
-	              PatientDetails
-	            </Typography>
-	            <div >
-	              <List style={styles.list}>
-	              { data.map( this.renderDetailesRow ) }
-	              </List>
-	              { edit && <div>
-		              	<Button variant="contained" style={styles.button} color="secondary" onClick={this.handleDismissChanges}>
-						        Delete
-						        <DeleteIcon />
-						      </Button>
-						      <Button variant="contained" style={styles.button} color="primary" onClick={this.handleSaveChanges}>
-						        Save
-						        <SaveIcon />
-						      </Button>
-						      </div>}
-	            </div>
-	          </Grid>
+						<Typography variant="title">
+							פרטי מטופל
+						</Typography>
+						{!edit && <Button variant="fab" color="secondary"  style={styles.edit} onClick={()=> { this.setState({edit: true}) } }>
+							<EditIcon />
+						</Button>}
+						<div>
+							<List style={styles.list}>
+							{ data.map( this.renderDetailesRow ) }
+							</List>
+							{ edit && <div>
+									<Button variant="contained" style={styles.button} color="secondary" onClick={this.handleDismissChanges}>
+									מחק שינויים
+									<DeleteIcon />
+								</Button>
+								<Button variant="contained" style={styles.button} color="primary" onClick={this.handleSaveChanges}>
+									שמור שינויים
+									<SaveIcon />
+								</Button>
+								</div>}
+							</div>
 					</div>
 				)
 		}

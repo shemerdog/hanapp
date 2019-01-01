@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom'
 import Navbar from './components/navbar';
 import Login from './components/login';
 import PatientsList from './components/patients-list';
+import CreatePatient from './components/create-patient';
 import PatientDetails from './components/patient-details';
 import Error from './components/error';
 
@@ -12,7 +13,7 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state={
-      login: false, //need to change to false before production
+      login: true, //need to change to false before production
       userID: "123",
       userName: "נסיון",
       userPic: "",
@@ -42,6 +43,7 @@ class App extends Component {
   enterPetientDetails( patientId) {
     this.setState({patientId: patientId})
   }
+  updatePetientDetails
 
 
   render() {
@@ -51,9 +53,13 @@ class App extends Component {
                         stopLoading: this.stopLoading,
                         startLoading: this.startLoading
                       };
-    const dataForPatient = {  login: this.state.login,
+    const dataForPatient =  {  login: this.state.login,
                               userID: this.state.userID,
                             };
+    const dataForCreatePatient = {login: this.state.login,
+                                  userID: this.state.userID,
+                                  patientData:this.state.patientData,
+                                }
     return (
       <div dir="rtl" className="App">
         <Navbar login={this.state.login} useName={this.state.userName} userPic={this.state.userPic} handleLogout={this.handleLogout} />
@@ -61,6 +67,7 @@ class App extends Component {
           <Route exact path='/' render={(props) => <Login  loginData={loginData} {...props} /> }/>
           <Route path='/login' render={(props) => <Login loginData={loginData} {...props} /> }/>
           <Route path='/patients-list' render={(props) => <PatientsList  data={dataForPatient} {...props} /> }/>
+          <Route path='/create-patient' render={(props) => <CreatePatient  data={dataForCreatePatient} {...props} /> }/>
           <Route path='/patient-details/:patientId' render={(props) => <PatientDetails  data={dataForPatient} {...props} /> }/>
           <Route render={(props) => <Error  {...props} /> }/>
         </Switch>
