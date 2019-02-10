@@ -63,7 +63,7 @@ class Navbar extends Component {
 
 	render(){
 		return (
-		  <AppBar position="static">
+		  <AppBar  style={{position: 'fixed'}} position="static">
 		  <Toolbar>
 		      <div className="logo" style={{margin:"0.5vw"}}>HanApp</div>
 		      <Link to='/patients-list'>

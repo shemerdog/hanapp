@@ -63,6 +63,7 @@ class App extends Component {
     return (
       <div dir="rtl" className="App">
         <Navbar login={this.state.login} useName={this.state.userName} userPic={this.state.userPic} handleLogout={this.handleLogout} />
+        <div style={{height:'68px', width: '100%'}} >placeholder</div>
         <Switch>
           <Route exact path='/' render={(props) => <Login  loginData={loginData} {...props} /> }/>
           <Route path='/login' render={(props) => <Login loginData={loginData} {...props} /> }/>

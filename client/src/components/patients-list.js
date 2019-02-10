@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress'
 import Face from '@material-ui/icons/Face';
 import PersonAdd from '@material-ui/icons/PersonAdd';
 
@@ -26,14 +27,16 @@ class PatientsList extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			listData: []
+			listData: [],
+			loading: false,
 		}
 		this.renderPatientsListItems = this.renderPatientsListItems.bind(this);
 		this.callApi = this.callApi.bind(this);
 	}
 	componentDidMount() {
+		this.setState( { loading: true } ) 
 		this.callApi()
-		.then( res => { this.setState( { listData: res.data } ) } )
+		.then( res => { this.setState( { listData: res, loading: false } ) } )
 	};
 
 	callApi = async () => {
@@ -44,9 +47,13 @@ class PatientsList extends Component {
 	};
 	renderPatientsListItems() {
 		const { listData } = this.state
-		if (listData.length === 0) return (
-			<div>אין מטופלים כרגע</div>
-		)
+		if (listData.length === 0) {
+			if(this.state.loading) {
+				return ( <CircularProgress size={20}/>
+			)} else {
+				return ( <div>אין מטופלים כרגע</div>
+			)}
+		}
 		return listData.map( (item, index) => {
 			return(
 				<Link key={index} to={'/patient-details/' + item.id}>
@@ -59,7 +66,7 @@ class PatientsList extends Component {
 				</Link>
 			)
 		})
-	}
+	};
 
 	render(){
 		if (this.props.data.login === false) {

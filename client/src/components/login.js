@@ -10,10 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import LockIcon from '@material-ui/icons/LockOutlined';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogTemplate from './dialog';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 
@@ -70,59 +67,54 @@ class Login extends Component {
 		}
 		return (
 			<div>
-						<Paper style={style.paper}>
-							<div>
-								<Avatar style={style.avatar}>
-									<LockIcon />
-								</Avatar>
-							</div>
-							<FormControl style={style.margin}>
-								<InputLabel style={style.label} htmlFor="name-simple">שם משתמש</InputLabel>
-								<Input name="userName" value={this.state.userName} onChange={this.handleChange} />
-							</FormControl>
-							<br/>
-							<FormControl style={style.margin}>
-								<InputLabel style={style.label} htmlFor="pass-simple">סיסמה</InputLabel>
-								<Input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
-							</FormControl>
-							<Typography style={style.leftText} variant="caption" onClick={this.openDialog}>
-								שכחת את הסיסמה?
-							</Typography>
-							<br/>
-							<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>התחבר</Button>
-							{this.props.loginData.loading && <CircularProgress size={20}/>}
-							<div>
-								<FacebookLogin
-									onClick={this.props.loginData.startLoading}
-									appId="384903288929031"
-									autoLoad={false}
-									size="medium"
-									fields="name,email,picture"
-									textButton="Login with Facebook"
-									onFailure={()=>{return} }
-									callback={this.handleFBClick}
-								/>
-							</div>
-							<div>
-								<GoogleLogin
-									onClick={this.props.loginData.startLoading}
-									clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
-									onSuccess={this.handleGoogleClick}
-									onFailure={(res)=>{console.log(res)} }
-								/>
-							</div>
-						</Paper>
-						<Dialog dir="rtl"
-							open={this.state.dialogOpen}
-							onClose={this.closeDialog}
-						>
-							<DialogTitle>{"חבל מאוד!"}</DialogTitle>
-							<DialogContent>
-								<DialogContentText>
-									בעיה שלך, פעם הבאה אל תשכח.
-								</DialogContentText>
-							</DialogContent>
-						</Dialog>
+				<Paper style={style.paper}>
+					<div>
+						<Avatar style={style.avatar}>
+							<LockIcon />
+						</Avatar>
+					</div>
+					<FormControl style={style.margin}>
+						<InputLabel style={style.label} htmlFor="name-simple">שם משתמש</InputLabel>
+						<Input name="userName" value={this.state.userName} onChange={this.handleChange} />
+					</FormControl>
+					<br/>
+					<FormControl style={style.margin}>
+						<InputLabel style={style.label} htmlFor="pass-simple">סיסמה</InputLabel>
+						<Input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
+					</FormControl>
+					<Typography style={style.leftText} variant="caption" onClick={this.openDialog}>
+						שכחת את הסיסמה?
+					</Typography>
+					<br/>
+					<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>התחבר</Button>
+					{this.props.loginData.loading && <CircularProgress size={20}/>}
+					<div>
+						<FacebookLogin
+							onClick={this.props.loginData.startLoading}
+							appId="384903288929031"
+							autoLoad={false}
+							size="medium"
+							fields="name,email,picture"
+							textButton="Login with Facebook"
+							onFailure={()=>{return} }
+							callback={this.handleFBClick}
+						/>
+					</div>
+					<div>
+						<GoogleLogin
+							onClick={this.props.loginData.startLoading}
+							clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
+							onSuccess={this.handleGoogleClick}
+							onFailure={(res)=>{console.log(res)} }
+						/>
+					</div>
+				</Paper>
+				<DialogTemplate
+				title="חבל מאוד!"
+				text='בעיה שלך, פעם הבאה אל תשכח.'
+				open={this.state.dialogOpen}
+				onClose={this.closeDialog}
+				/>
 			</div>
 		);
 	}
