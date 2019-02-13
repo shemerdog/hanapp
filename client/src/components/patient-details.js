@@ -1,5 +1,6 @@
 import React ,{ Component } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
+import {callApi} from '../tools/fetch-requests'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -13,8 +14,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
 import DialogTemplate from './dialog';
 import NextAppointment from './nextAppointment';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 
 const styles = {
 	list: {
@@ -50,6 +49,7 @@ class PatientDetails extends Component {
 		this.state = {
 			data: [],
 			appointments:[],
+			availableAppointments: [],
 			newAppointment:{time:'', date:''},
 			edit:false,
 			dialogDeleteOpen:false,
@@ -73,15 +73,15 @@ class PatientDetails extends Component {
 		if (this.state.edit) {
 			return(
 				<FormControl key={index}>
-					<InputLabel htmlFor={item.key}>{item.key}</InputLabel>
+					<InputLabel htmlFor={item.key}>{item.label}</InputLabel>
 					<Input type="text" name={index.toString()} value={item.value} onChange={this.handleChange} />
 				</FormControl>
 		)}
 		else{
 			return(
-				<ListItem button key={index} style={styles.ListItem}>
+				<ListItem dense button key={index} style={styles.ListItem}>
 					<ListItemText
-						primary={item.key}
+						primary={item.label}
 						secondary={item.value}
 					/>
 				</ListItem>
@@ -99,13 +99,19 @@ class PatientDetails extends Component {
 	handleSaveAppointment(appointment){
 		this.exitAppointmentDialog();
 		this.saveAppointment();
+		this.setState({newAppointment:{time:'', date:''}, availableAppointments: []})
 		this.setFormData();
 	}
 	
-	handleAppointmentChange(event){
+	handleAppointmentChange(target){
 		let change = {}
 		change.newAppointment = {...this.state.newAppointment}
-		change.newAppointment[event.target.type] = event.target.value;
+		change.newAppointment[target.type] = target.value;
+		if (target.type === "date") {
+			callApi('/api/available-appointments?date='+target.value).then(
+				res => this.setState({availableAppointments: res})
+			)
+		}
 		this.setState(change)
 	}
 
@@ -136,7 +142,7 @@ class PatientDetails extends Component {
 
 	saveAppointment(){
 		const data = {
-			appointment: this.state.newAppointment.date + ", " + this.state.newAppointment.time,
+			appointment: this.state.newAppointment.date + " " + this.state.newAppointment.time,
 			id: this.props.match.params.patientId
 		}
 			fetch('/api/submit-patient-appointment', {
@@ -160,7 +166,7 @@ class PatientDetails extends Component {
 	};
 
 	setFormData() {
-		this.callDedailsApi()
+		this.callDetailsApi()
 		.then( res => {
 			res = res.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])})
 			this.setState( { data: res } )} )
@@ -168,26 +174,28 @@ class PatientDetails extends Component {
 		.then( res => {
 			this.setState( { appointments: res.sort() } )} ) 
 	}
+
 	componentDidMount() {
 		this.setFormData();
 	};
 
-	callDedailsApi = async () => {
-		const response = await fetch( '/api/patient-details?userid=' + this.props.data.userId + '&patientid=' + this.props.match.params.patientId );
+
+	callDetailsApi = async () => {
+		const response = await fetch( '/api/patient-details?userid=' + this.props.data.userID + '&patientid=' + this.props.match.params.patientId );
 		const body = await response.json();
 		if ( response.status !== 200) throw Error( body.message );
 		return body;
 	};
 
 	callAppointmentsApi = async () => {
-		const response = await fetch( '/api/patient-appointments?userid=' + this.props.data.userId + '&patientid=' + this.props.match.params.patientId );
+		const response = await fetch( '/api/patient-appointments?userid=' + this.props.data.userID + '&patientid=' + this.props.match.params.patientId + '&method=next' );
 		const body = await response.json();
 		if ( response.status !== 200) throw Error( body.message );
 		return body;
 	};
 
 	render() {
-		const { data, appointments, edit } = this.state;
+		const { data, appointments, availableAppointments, newAppointment, edit } = this.state;
 
 		if ( this.props.data.login === false ) {
 				return <Redirect to='/login' />
@@ -203,11 +211,12 @@ class PatientDetails extends Component {
 							<NextAppointment
 								handleChange={this.handleAppointmentChange}
 								handleSave={this.handleSaveAppointment}
-								open={this.state.dialogAppointmentOpen}
 								handleClose={this.exitAppointmentDialog}
 								handleClick={this.openAppointmentDialog}
+								open={this.state.dialogAppointmentOpen}
+								availableAppointments={availableAppointments}
 								appointments={appointments}
-								newAppointment={this.state.newAppointment}
+								newAppointment={newAppointment}
 							/>
 							{ data.map( this.renderDetailesRow ) }
 							</List>

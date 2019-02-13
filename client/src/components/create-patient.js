@@ -134,7 +134,7 @@ class CreatePatient extends Component {
 
 		if(this.validateForm()){
 			const formData = this.state.patientData.map( item => {
-				return {key: item.key, value: item.val}
+				return {key: item.key, value: item.val, label: item.label}
 			}).concat([{key: 'type', value: 'patient'}])
 			fetch('/api/submit-patient-form', {
 				method: 'POST',
