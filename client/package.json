@@ -1,5 +1,5 @@
 {
-  "name": "bler",
+  "name": "hanapp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -15,6 +15,7 @@
     "react-google-login": "^4.0.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.5",
+    "react-swipeable-views": "^0.13.1",
     "react_google_calendar": "^2.2.3"
   },
   "proxy": "http://localhost:3001/",

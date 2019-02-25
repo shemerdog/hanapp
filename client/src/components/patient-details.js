@@ -1,19 +1,17 @@
 import React ,{ Component } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
-import {callApi} from '../tools/fetch-requests'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
 import DialogTemplate from './dialog';
 import NextAppointment from './nextAppointment';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import CreateOrEditProfile from './CreateOrEditProfile';
 
 const styles = {
 	list: {
@@ -41,6 +39,16 @@ const customSort = {
 	address: 7,
 }
 
+const numToDay = {
+	0: "ראשון",
+	1: "שני",
+	2: "שלישי",
+	3: "רביעי",
+	4: "חמישי",
+	5: "שישי",
+	6: "שבת",
+}
+
 
 class PatientDetails extends Component {
 	
@@ -52,14 +60,13 @@ class PatientDetails extends Component {
 			availableAppointments: [],
 			newAppointment:{time:'', date:''},
 			edit:false,
+			error: "",
 			dialogDeleteOpen:false,
 			dialogAppointmentOpen:false,
 		}
 
 		this.renderDetailesRow = this.renderDetailesRow.bind(this);
 		this.handleChange = this.handleChange.bind(this);
-		this.handleDismissChanges = this.handleDismissChanges.bind(this);
-		this.handleSaveChanges = this.handleSaveChanges.bind(this);
 		this.setFormData = this.setFormData.bind(this);
 		this.deletePatient = this.deletePatient.bind(this);
 		this.exitDeleteDialog = this.exitDeleteDialog.bind(this);
@@ -67,26 +74,19 @@ class PatientDetails extends Component {
 		this.openAppointmentDialog = this.openAppointmentDialog.bind(this);
 		this.handleSaveAppointment = this.handleSaveAppointment.bind(this);
 		this.handleAppointmentChange = this.handleAppointmentChange.bind(this);
+		this.handleToggleEditDialog = this.handleToggleEditDialog.bind(this);
+		this.handleSaveChanges = this.handleSaveChanges.bind(this);
 	};
 
 	renderDetailesRow( item, index ) {
-		if (this.state.edit) {
-			return(
-				<FormControl key={index}>
-					<InputLabel htmlFor={item.key}>{item.label}</InputLabel>
-					<Input type="text" name={index.toString()} value={item.value} onChange={this.handleChange} />
-				</FormControl>
-		)}
-		else{
-			return(
-				<ListItem dense button key={index} style={styles.ListItem}>
-					<ListItemText
-						primary={item.label}
-						secondary={item.value}
-					/>
-				</ListItem>
-			)
-		}
+		return(
+			<ListItem dense button key={index} style={styles.ListItem}>
+				<ListItemText
+					primary={item.label}
+					secondary={item.value}
+				/>
+			</ListItem>
+		)
 	};
 
 	handleChange(event) {
@@ -104,16 +104,30 @@ class PatientDetails extends Component {
 	}
 	
 	handleAppointmentChange(target){
-		let change = {}
-		change.newAppointment = {...this.state.newAppointment}
+		let change = {};
+		change.newAppointment = {...this.state.newAppointment};
 		change.newAppointment[target.type] = target.value;
 		if (target.type === "date") {
-			callApi('/api/available-appointments?date='+target.value).then(
-				res => this.setState({availableAppointments: res})
-			)
+			this.setState({error:"", availableAppointments: []})
+			fetch('/api/available-appointments?date='+target.value)
+			.then(
+				res => res.json()
+				)
+			.then( res => {
+				switch(res.message) {
+					case "free":
+						this.setState({error: "המטפל בחופש בימים אלו: " + res.days.map(num => numToDay[num])});
+						break;
+					case "old":
+						this.setState({error: "תאריך זה עבר כבר"});
+						break;
+					default:
+						this.setState({availableAppointments: res});
+				}
+			})
 		}
 		this.setState(change)
-	}
+	};
 
 	exitDeleteDialog(){
 		this.setState({dialogDeleteOpen: false});
@@ -128,18 +142,6 @@ class PatientDetails extends Component {
 		this.props.history.push('/patients-list');
 	}
 
-	handleSaveChanges(){
-		this.setState({edit: false});
-			fetch('/api/submit-patient-form', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({formData:this.state.data, formMethod: 'update'})
-		})
-	};
-
 	saveAppointment(){
 		const data = {
 			appointment: this.state.newAppointment.date + " " + this.state.newAppointment.time,
@@ -153,11 +155,6 @@ class PatientDetails extends Component {
 				},
 				body: JSON.stringify(data)
 		})
-	};
-
-	handleDismissChanges(){
-		this.setFormData();
-		this.setState({edit: false});
 	};
 
 	openAppointmentDialog(e){
@@ -194,8 +191,19 @@ class PatientDetails extends Component {
 		return body;
 	};
 
+	handleToggleEditDialog(){
+		this.setState(prevState => ({
+			edit: !prevState.edit
+		}));
+	};
+
+	handleSaveChanges(){
+		this.setFormData();
+		this.handleToggleEditDialog();
+	}
+
 	render() {
-		const { data, appointments, availableAppointments, newAppointment, edit } = this.state;
+		const { data, appointments, availableAppointments, newAppointment, error, edit } = this.state;
 
 		if ( this.props.data.login === false ) {
 				return <Redirect to='/login' />
@@ -217,26 +225,17 @@ class PatientDetails extends Component {
 								availableAppointments={availableAppointments}
 								appointments={appointments}
 								newAppointment={newAppointment}
+								error={error}
 							/>
 							{ data.map( this.renderDetailesRow ) }
 							</List>
-							{ edit && <div>
-									<Button variant="contained" style={styles.button} color="secondary" onClick={this.handleDismissChanges}>
-									מחק שינויים
-									<DeleteIcon />
-								</Button>
-								<Button variant="contained" style={styles.button} color="primary" onClick={this.handleSaveChanges}>
-									שמור שינויים
-									<SaveIcon />
-								</Button>
-								</div>}
 							</div>
 						{!edit &&
 						<div style={styles.fabButtonsWrap}>
 							<Button variant="fab" style={styles.fabButton} color="secondary" onClick={()=> { this.setState({dialogDeleteOpen: true}) } }>
 								<DeleteIcon />
 							</Button>
-							<Button variant="fab" style={styles.fabButton} color="primary" onClick={()=> { this.setState({edit: true}) } }>
+							<Button variant="fab" style={styles.fabButton} color="primary" onClick={this.handleToggleEditDialog}>
 								<EditIcon />
 							</Button>
 							</div>}
@@ -247,7 +246,15 @@ class PatientDetails extends Component {
 						handleConfirmation={this.deletePatient}
 						open={this.state.dialogDeleteOpen}
 						onClose={this.exitDeleteDialog}
-					/>
+						/>
+						<Dialog dir='rtl'
+							open={this.state.edit}
+							onClose={this.handleToggleEditDialog}
+						>
+							<DialogContent>
+								<CreateOrEditProfile data={data}actionType="edit" profileType="patient" handleExit={this.handleSaveChanges}/>
+							</DialogContent>
+						</Dialog>
 					</div>
 				)
 		}

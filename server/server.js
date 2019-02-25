@@ -47,6 +47,16 @@ app.get('/api/delete-patient', (req, res) => {
 	serverLogic.deletePatientsListFromDb(req, res);
 });
 
+app.get('/api/get-settings', (req, res) => {
+	console.log('api get-settings called');
+	serverLogic.getSettings(res)
+});
+
+app.post('/api/set-settings', (req, res) => {
+	console.log('api set-settings called');
+	serverLogic.submitSettings(req, res);
+});
+
 app.post('/api/submit-patient-form', (req, res) => {
 	const formMethod = req.body.formMethod;
 	serverLogic.submitPatientFormToDb(req, res, formMethod);
@@ -58,4 +68,7 @@ app.post('/api/submit-patient-appointment', (req, res) => {
 });
 
 //listen//
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => {
+	serverLogic.init(); // update settings...
+	console.log(`Listening on port ${port}`)
+});

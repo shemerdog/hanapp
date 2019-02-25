@@ -51,9 +51,9 @@ export default function NextAppointment(props) {
 						<br />
 						<DialogContent>
 							<List dense={true}>
-								{props.availableAppointments.map((appointment, index) => 
-									<ListItem key={index}>
-										<ListItemText>{appointment}</ListItemText>
+								{!props.error && props.availableAppointments.map((appointment, index) => 
+									<ListItem color={iconColor(appointment, props.newAppointment.time)} key={index}>
+										<ListItemText >{appointment}</ListItemText>
 										<ListItemSecondaryAction>
 											<IconButton color={iconColor(appointment, props.newAppointment.time)} onClick={ ()=> props.handleChange({type: "time",value: appointment}) } >
 												<AddIcon />
@@ -61,6 +61,9 @@ export default function NextAppointment(props) {
 										</ListItemSecondaryAction>
 									</ListItem>
 								)}
+								{props.error && <Typography  variant="caption" color='secondary' align="center">
+									<span>{props.error}</span>
+								</Typography>}
 							</List>
 					</DialogContent>
 					<DialogActions>

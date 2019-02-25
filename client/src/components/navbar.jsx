@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import Home from '@material-ui/icons/Home';
+import Settings from '@material-ui/icons/Settings';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -67,11 +68,16 @@ class Navbar extends Component {
 		  <Toolbar>
 		      <div className="logo" style={{margin:"0.5vw"}}>HanApp</div>
 		      <Link to='/patients-list'>
-			      <IconButton >
+						<IconButton >
 							<Home />
 						</IconButton>
 					</Link>
-		      {this.renderLogout()}
+					<Link to='/settings'>
+						<IconButton >
+							<Settings />
+						</IconButton>
+					</Link>
+	      	{this.renderLogout()}
 		    </Toolbar>
 		    <Dialog
 					open={this.state.dialogOpen}

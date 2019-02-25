@@ -3,7 +3,17 @@ const mongojs = require('mongojs');
 
 mongojs.Promise = global.Promise;
 
-var Db = mongojs('hanapp', ['appointments', 'users']);
+var Db = mongojs('hanapp', ['appointments', 'users', 'settings']);
+
+const defaultCalendarSettings = {
+	_id: 1,
+	name: "calendarSettings",
+	freeDays: [5,6], // starting from 0.
+	appointmentDuration: 15,  // in minutes
+	workHours: ["10:00", "18:00"],  // start,stop
+};
+
+let calendarSettings = defaultCalendarSettings;
 
 const patientLabels = { // get the labels back
 	"firstName": "שם פרטי",
@@ -16,22 +26,53 @@ const patientLabels = { // get the labels back
 	"supervisorId": "מבוגר אחראי"
 };
 
+exports.init = (res) => {
+	Db.settings.findOne({name: "calendarSettings"}, (err,doc) => {
+		if (doc){
+			calendarSettings = doc;
+		}
+	})
+};
+
+const isValidNewAppointmentDate = function(date){
+	console.log("isValidNewAppointmentDate called: "+ date)
+	const day = moment(date).day();
+	if (moment(date).isBefore(moment())){
+		console.log("old date!!!");
+		return { message: 'old'};
+	}
+	else if (calendarSettings.freeDays.indexOf(day) > -1 ) {
+		console.log("free day!!!");
+		return { message: 'free', days: calendarSettings.freeDays.sort()};
+	}
+	else return { message: 'ok'};
+}
+
+const checkBusy = (newTime) => (appointment) =>{
+	return ! moment(newTime).add(1,"ms").isBetween(appointment.startTime, appointment.endTime)
+}
+
 exports.getAvailableAppointmentsFromDb = (res, userID, date) => { // user id is the therapist.
+	const dateStatus = isValidNewAppointmentDate(date);
+		console.log(dateStatus);
+	if (dateStatus.message !== "ok"){
+		return res.status(444).json(dateStatus);
+	}
 	const regexString =  new RegExp('^'+date);
-	Db.appointments.find({startTime: {$in : [regexString]} }, (err, docs) => {
+	Db.appointments.find({startTime: {$in : [regexString]} }, (err, docs) => { // get appointments in certain date
 		let data = [];
 		let busy = [];
 		for( let index in docs){
-			busy.push(docs[index].startTime);
+			busy.push(docs[index]);
 		}
-		const start = moment(date+" 10:00");
-		const stop = moment(date+" 18:00");
+		const start = moment(date+" "+calendarSettings.workHours[0]);
+		const stop = moment(date+" "+calendarSettings.workHours[1]);
 
 		while(start.format() !== stop.format()){
-			if ( busy.every((item)=> moment(item).format() !== start.format() ) ) {
-				data.push(start.format('LT')); //only time
+			if ( busy.every(checkBusy(start)) ) {
+				data.push(start.format('hh:mm')); //only time
 			};
-			start.add(15, 'm')
+			start.add(parseInt(calendarSettings.appointmentDuration), 'm')
 
 		}
 		console.log(data);
@@ -80,11 +121,37 @@ exports.getPatientsListFromDb = (res) => {
 	})
 };
 
-exports.deletePatientsListFromDb = (req, res) => {
+exports.deletePatientsListFromDb = (req, res) => { // need to delete all appointment??????
 	console.log("deleting user id:" + req.query.patientid);
 	Db.users.remove({id: req.query.patientid});
 	res.send("deleted");
 };
+
+exports.getSettings = (res) => {
+	Db.settings.findOne({name: "calendarSettings"}, (err,doc) => { // i used random codes, up to  uto keep them or not 
+		if (doc){
+			calendarSettings = doc;
+			res.send(doc);
+		}
+		else {
+			console.log("didnt get DB settings, using defaultCalendarSettings")
+			calendarSettings = defaultCalendarSettings;
+			res.send(defaultCalendarSettings);
+		};
+	})
+};
+
+exports.submitSettings = (req, res) => {
+	console.log("submit Settings")
+	console.log(req.body);
+	Db.settings.update(
+      { "name" : "calendarSettings" },
+      req.body,
+      {upsert: true}
+	, function (err, doc) {
+		res.send("ok");
+	})
+}
 
 exports.submitPatientFormToDb = (req, res, formMethod) => {
 	let newData = {}
@@ -95,7 +162,7 @@ exports.submitPatientFormToDb = (req, res, formMethod) => {
 		console.log(newData)
 		Db.users.findOne( {id: newData.id}, (err,doc) => { // i used random codes, up to  uto keep them or not 
 				if (doc){
-					if(formMethod === 'create'){
+					if(formMethod === 'create'){	// create/edit
 						console.log("can't create new patient, already in database");
 						res.status('444').send("patient already in database");
 					} else {
@@ -122,8 +189,9 @@ exports.submitAppointmentToDb = (req, res) => {
 			console.log("can't create new appointment, busy");
 			res.status('444').send("appointment already in database");
 		} else {
+			Db.appointments.insert( {startTime: req.body.appointment, id: req.body.id, endTime: moment(req.body.appointment).add(parseInt(calendarSettings.appointmentDuration)-1, 'm').format("YYYY MM DD hh:mm")} );
 			console.log("appointment added");
-			Db.appointments.insert( {startTime: req.body.appointment, id: req.body.id});
+			res.send("appointment added");
 		}
 	})
 }
