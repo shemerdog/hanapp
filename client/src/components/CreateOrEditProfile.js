@@ -8,7 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import PersonAdd from '@material-ui/icons/PersonAdd';
-import DialogTemplate from './dialog';
+import DialogTemplate from '../tools/dialog';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 

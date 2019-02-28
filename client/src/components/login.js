@@ -10,7 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import LockIcon from '@material-ui/icons/LockOutlined';
-import DialogTemplate from './dialog';
+import DialogTemplate from '../tools/dialog';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 

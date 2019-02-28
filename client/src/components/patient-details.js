@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
-import DialogTemplate from './dialog';
+import DialogTemplate from '../tools/dialog';
 import NextAppointment from './nextAppointment';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
