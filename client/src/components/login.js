@@ -26,6 +26,10 @@ class Login extends Component {
 
 	};
 
+	componentDidMount() {
+		this.props.loginData.setTitle("hanApp");
+	};
+
 	handleChange(event) {
 		let change = {}
 		change[event.target.name] = event.target.value

@@ -6,7 +6,6 @@ import DialogTemplate from '../tools/dialog';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -56,7 +55,8 @@ class PatientsList extends Component {
 	}
 
 	componentDidMount() {
-		this.getListData()
+		this.getListData();
+		this.props.data.setTitle("רשימת מטופלים");
 	};
 
 	getListData = () => {
@@ -83,7 +83,7 @@ class PatientsList extends Component {
 		}
 		return listData.map( (item, index) => {
 			return(
-				<Link key={index} to={'/patient-details/' + item.id}>
+				<Link key={index} to={'/patient/' + item.id}>
 					<ListItem button style={styles.ListItem}>
 						<Avatar>
 							<Face />
@@ -108,9 +108,6 @@ class PatientsList extends Component {
 			return (
 				<div>
 					<List style={styles.list}>
-					<Typography variant="title">
-						רשימת מטופלים
-					</Typography>
 					<Link key="new" to='/create-patient/'>
 						<ListItem button style={styles.ListItem}>
 							<Avatar>

@@ -67,6 +67,11 @@ app.post('/api/submit-patient-appointment', (req, res) => {
 	serverLogic.submitAppointmentToDb(req, res);
 });
 
+app.post('/api/submit-appointment-summary', (req, res) => {
+	console.log("appointment-summary called: " + (req.body.appointment && req.body.startTime) );
+	serverLogic.updateAppointmentSummary(req, res);
+});
+
 //listen//
 app.listen(port, () => {
 	serverLogic.init(); // update settings...

@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import CalendarSettingsIcon from '../tools/calendar-settings-icon'
 import CalendarSettings from './settings-components'
-import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -12,7 +11,7 @@ import PersonPinIcon from '@material-ui/icons/PersonPin';
 const styles = {
 	container: {
 		width: '100%',
-		maxWidth: 400,
+		maxWidth: 600,
 		margin: 'auto',
 	}
 }
@@ -22,20 +21,20 @@ class Settings extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			settingsComponenet: 0,
+			settingsComponent: 0,
 		}
 	};
 
 	componentDidMount() {
-		
+		this.props.data.setTitle("הגדרות");
 	};
 
-	handleChange = (event, settingsComponenet) => {
-    this.setState({ settingsComponenet });
+	handleChange = (event, settingsComponent) => {
+    this.setState({ settingsComponent });
   };
 
   handleChangeIndex = index => {
-    this.setState({ settingsComponenet: index });
+    this.setState({ settingsComponent: index });
   };
 
 	render() {
@@ -43,14 +42,11 @@ class Settings extends Component {
 				return <Redirect to='/login' />
 			}
 			else {
-				const {settingsComponenet} = this.state;
+				const {settingsComponent} = this.state;
 				return (
 					<div style={styles.container}>
-						<Typography style={{margin: "2vh 0"}} variant="title">
-							הגדרות
-						</Typography>
 						<Tabs
-							value={settingsComponenet}
+							value={settingsComponent}
 							onChange={this.handleChange}
 							fullWidth
 							indicatorColor="secondary"
@@ -65,7 +61,7 @@ class Settings extends Component {
 						</Tabs>
 		        <SwipeableViews
 		          axis='x-reverse'
-		          index={settingsComponenet}
+		          index={settingsComponent}
 		          onChangeIndex={this.handleChangeIndex}
 		        >
 							<CalendarSettings />

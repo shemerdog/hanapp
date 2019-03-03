@@ -80,18 +80,17 @@ exports.getAvailableAppointmentsFromDb = (res, userID, date) => { // user id is 
 	})
 };
 
-exports.getPatientAppointmentsFromDb = (res, userID, patientId, method) => { // method string can be 'all' 'next'.
+exports.getPatientAppointmentsFromDb = (res, userID, patientId, method) => { // method string can be 'all' 'next' and 'history'.
 	Db.appointments.find({id: patientId}, (err, docs) => {
 		console.log('%s patient appointments sent: ', method );
-		const today = new Date();
-		const todayArray = today.toLocaleDateString().split('-');
+		const now = moment();
 		let data = [];
-		for( let item in docs){
-			const appointmentArray = docs[item].startTime.split('-');
+		for( let index in docs){
 			if(	method == "all" || typeof(method) == 'undefined' ||
-				( method == "next" && parseInt(appointmentArray[0]) >= parseInt(todayArray[0]) && parseInt(appointmentArray[1]) >= parseInt(todayArray[1]) && parseInt(appointmentArray[2]) >= parseInt(todayArray[2]) )
+				( method == "next" && now.isBefore(docs[index].startTime) ) ||
+				( method == "history" && now.isAfter(docs[index].startTime) )
 				) {
-				data.push(docs[item].startTime);
+				data.push(docs[index]);
 			}
 		}
 		console.log(data);
@@ -99,8 +98,27 @@ exports.getPatientAppointmentsFromDb = (res, userID, patientId, method) => { // 
 	})
 };
 
+exports.getPatientAppointmentByDateFromDb = (res, userID, patientId, date) => { // like getPatientAppointmentsFromDb() but with specific date
+	Db.appointments.findOne({id: patientId, startTime: date}, (err, doc) => {
+		console.log('%s patient appointment by date: ');
+			if(	doc){
+				console.log(doc);
+				res.send(doc);
+			} else {
+				console.log("data not found");
+				res.status('444').json({message: "not found"});
+			}
+
+		})
+};
+
 exports.getPatientDataFromDb = (res, userID, patientId) => { //we use userId for permisson or dedicated DB. we will not return it
 	Db.users.findOne({id: patientId}, (err, doc) => {
+		if( ! doc){
+			console.log("no such ID in DB");
+			res.status('444').json({message: "not found"});
+			return;
+		}
 		console.log("patient data sent: ");
 		let data = [];
 		for( let key in doc){
@@ -186,7 +204,7 @@ exports.submitPatientFormToDb = (req, res, formMethod) => {
 exports.submitAppointmentToDb = (req, res) => {
 	Db.appointments.findOne( {startTime: req.body.appointment}, (err,doc) => {
 		if (doc){
-			console.log("can't create new appointment, busy");
+			console.log("can't create new appointment, appointment already in database");
 			res.status('444').send("appointment already in database");
 		} else {
 			Db.appointments.insert( {startTime: req.body.appointment, id: req.body.id, endTime: moment(req.body.appointment).add(parseInt(calendarSettings.appointmentDuration)-1, 'm').format("YYYY MM DD hh:mm")} );
@@ -195,3 +213,12 @@ exports.submitAppointmentToDb = (req, res) => {
 		}
 	})
 }
+
+exports.updateAppointmentSummary = (req, res) => {
+	console.log(req.body);
+	Db.appointments.update( {startTime: req.body.startTime}, {$set: {summary: req.body.summary} }, {}, () => {
+			console.log("appointment updated");
+	} );
+	res.send("appointment updated");
+}
+

@@ -14,8 +14,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 
 const styles = {
 	container: {
-		maxWidth: 800,
-		margin: 'auto',
+		maxWidth: 600,
+		margin: '2vh auto',
 	},
 	input: {
 		margin: '1vh 1vw',
@@ -66,6 +66,10 @@ class CreateOrEditProfile extends Component {
 
 	componentWillUnmount() {
 		if (this.timeout) {clearTimeout(this.timeout)}
+	};
+
+	componentDidMount() {
+		this.props.setTitle && this.props.setTitle(this.createTitle(this.props.actionType, this.props.profileType));
 	};
 
 	handleChange(event) {
@@ -156,9 +160,9 @@ class CreateOrEditProfile extends Component {
 		const {	profileType, actionType } = this.props;
 		return (
 					<div style={styles.container}>
-						<Typography variant="title">
+						{!this.props.setTitle && <Typography variant="title">
 							{this.createTitle(actionType, profileType)}
-						</Typography>
+						</Typography>}
 						<form >
 							{patientData.map((item, index) => <TextInput key={index} id={index.toString()} {...item} handleChange={this.handleChange}/>)}
 							<Typography  variant="caption" color='secondary' align="center">

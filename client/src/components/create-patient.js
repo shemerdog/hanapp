@@ -7,7 +7,7 @@ function CreatePatient(props) {
 		return <Redirect to='/login' />
 	}
 	else {
-		return <CreateOrEditProfile actionType="create" profileType="patient" handleExit={()=>{props.history.push('/patients-list');}}/>
+		return <CreateOrEditProfile setTitle={props.data.setTitle} actionType="create" profileType="patient" handleExit={()=>{props.history.push('/patients-list');}}/>
 	}
 }
 

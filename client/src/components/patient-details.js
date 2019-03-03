@@ -1,9 +1,9 @@
 import React ,{ Component } from 'react';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
@@ -50,7 +50,7 @@ const numToDay = {
 }
 
 
-class PatientDetails extends Component {
+class patientDetails extends Component {
 	
 	constructor(props) {
 		super(props);
@@ -60,12 +60,12 @@ class PatientDetails extends Component {
 			availableAppointments: [],
 			newAppointment:{time:'', date:''},
 			edit:false,
-			error: "",
+			nextAppointmentsApiError: "",
+			patientDetailsApiError: "",
 			dialogDeleteOpen:false,
 			dialogAppointmentOpen:false,
 		}
 
-		this.renderDetailesRow = this.renderDetailesRow.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.setFormData = this.setFormData.bind(this);
 		this.deletePatient = this.deletePatient.bind(this);
@@ -76,17 +76,6 @@ class PatientDetails extends Component {
 		this.handleAppointmentChange = this.handleAppointmentChange.bind(this);
 		this.handleToggleEditDialog = this.handleToggleEditDialog.bind(this);
 		this.handleSaveChanges = this.handleSaveChanges.bind(this);
-	};
-
-	renderDetailesRow( item, index ) {
-		return(
-			<ListItem dense button key={index} style={styles.ListItem}>
-				<ListItemText
-					primary={item.label}
-					secondary={item.value}
-				/>
-			</ListItem>
-		)
 	};
 
 	handleChange(event) {
@@ -108,7 +97,7 @@ class PatientDetails extends Component {
 		change.newAppointment = {...this.state.newAppointment};
 		change.newAppointment[target.type] = target.value;
 		if (target.type === "date") {
-			this.setState({error:"", availableAppointments: []})
+			this.setState({nextAppointmentsApiError:"", availableAppointments: []})
 			fetch('/api/available-appointments?date='+target.value)
 			.then(
 				res => res.json()
@@ -116,10 +105,10 @@ class PatientDetails extends Component {
 			.then( res => {
 				switch(res.message) {
 					case "free":
-						this.setState({error: "המטפל בחופש בימים אלו: " + res.days.map(num => numToDay[num])});
+						this.setState({nextAppointmentsApiError: "המטפל בחופש בימים אלו: " + res.days.map(num => numToDay[num])});
 						break;
 					case "old":
-						this.setState({error: "תאריך זה עבר כבר"});
+						this.setState({nextAppointmentsApiError: "תאריך זה עבר כבר"});
 						break;
 					default:
 						this.setState({availableAppointments: res});
@@ -166,7 +155,14 @@ class PatientDetails extends Component {
 		this.callDetailsApi()
 		.then( res => {
 			res = res.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])})
-			this.setState( { data: res } )} )
+			this.setState({ data: res }) 
+		}, err => {
+				if (err.message === "not found") {
+					this.setState({patientDetailsApiError: "מטופל לא קיים במערכת או שאין לך הרשאה"} )
+				} else {
+					this.setState({patientDetailsApiError: "שגיאה לא מוכרת"} )
+				}
+		});
 		this.callAppointmentsApi()
 		.then( res => {
 			this.setState( { appointments: res.sort() } )} ) 
@@ -203,18 +199,15 @@ class PatientDetails extends Component {
 	}
 
 	render() {
-		const { data, appointments, availableAppointments, newAppointment, error, edit } = this.state;
+		const { data, appointments, availableAppointments, newAppointment, patientDetailsApiError, nextAppointmentsApiError, edit } = this.state;
 
-		if ( this.props.data.login === false ) {
-				return <Redirect to='/login' />
-			}
-			else {
+		
 				return (
-					<div>
-						<Typography variant="title">
-							פרטי מטופל
-						</Typography>
+					<div dir="rtl">
 						<div>
+							{patientDetailsApiError && <Typography  variant="caption" color='secondary' align="center">
+									<span>{patientDetailsApiError}</span>
+								</Typography>}
 							<List style={styles.list}>
 							<NextAppointment
 								handleChange={this.handleAppointmentChange}
@@ -225,9 +218,15 @@ class PatientDetails extends Component {
 								availableAppointments={availableAppointments}
 								appointments={appointments}
 								newAppointment={newAppointment}
-								error={error}
+								error={nextAppointmentsApiError}
 							/>
-							{ data.map( this.renderDetailesRow ) }
+							{ data.map( (item, index) => 
+								<ListItem dense button key={index} style={styles.ListItem}>
+									<ListItemText
+										primary={item.label}
+										secondary={item.value}
+									/>
+								</ListItem> ) }
 							</List>
 							</div>
 						{!edit &&
@@ -257,8 +256,7 @@ class PatientDetails extends Component {
 						</Dialog>
 					</div>
 				)
-		}
 	}
 }
 
-export default withRouter( PatientDetails);
+export default withRouter( patientDetails );

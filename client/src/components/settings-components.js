@@ -42,7 +42,6 @@ class CalendarSettings extends Component {
 	componentDidMount() {
 		callApi('/api/get-settings')
 		.then(res=>{
-
 			const settings = [...this.state.settings];
 			settings.forEach( item => item.value = res[item.key] );
 			this.setState({settings: settings, orgSettingObject: res })

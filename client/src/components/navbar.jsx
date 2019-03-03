@@ -12,11 +12,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = {
-  login:{position: 'fixed', left:  "1vw", top:'0.5vh'},
+  login:{position: 'absolute', left:  "1vw", top:'0.5vh'},
   avatar: {float: "right", margin: "0 1vw"},
   welcome: {
     fontSize: "0.8em",
-  	position: 'fixed',
+  	position: 'absolute',
   	left:  "2vw",
   	top: '30px',
   	display: 'inline-block',
@@ -47,6 +47,7 @@ class Navbar extends Component {
 			this.timeout = setTimeout(this.closeDialog.bind(this), 3000);
 		}
 	};
+
 	componentWillUnmount() {
 		if (this.timeout) {clearTimeout(this.timeout)}
 	};
@@ -55,7 +56,7 @@ class Navbar extends Component {
 			return (
 				<Fragment>
 					<Button style={styles.login} color="inherit" onClick={this.props.handleLogout}>Logout</Button>
-					{ this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> }
+					{ /*this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> */}
 					<div style={styles.welcome}>שלום {this.props.useName}</div>
 					</Fragment>
 			)
@@ -64,19 +65,19 @@ class Navbar extends Component {
 
 	render(){
 		return (
-		  <AppBar  style={{position: 'fixed'}} position="static">
+		  <AppBar  position="sticky">
 		  <Toolbar>
-		      <div className="logo" style={{margin:"0.5vw"}}>HanApp</div>
 		      <Link to='/patients-list'>
-						<IconButton >
+						<IconButton onClick={this.handleOnClick}>
 							<Home />
 						</IconButton>
 					</Link>
 					<Link to='/settings'>
-						<IconButton >
+						<IconButton onClick={this.handleOnClick}>
 							<Settings />
 						</IconButton>
 					</Link>
+		      <div className="logo" style={{margin:"0.5vw"}}>{this.props.title}</div>
 	      	{this.renderLogout()}
 		    </Toolbar>
 		    <Dialog

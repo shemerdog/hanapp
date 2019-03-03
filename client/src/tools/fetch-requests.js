@@ -5,7 +5,7 @@ export const callApi = async (url) => {
 	return body;
 };
 
-export const postRequest = function(url, data) {
+export const postRequest = function(url, data, callback = defaultPostCallback) {
 	fetch(url, {
 			method: 'POST',
 			headers: {
@@ -14,4 +14,7 @@ export const postRequest = function(url, data) {
 			},
 			body: JSON.stringify(data)
 	})
+	.then(callback)
 };
+
+const defaultPostCallback = (res)=> console.log(res);

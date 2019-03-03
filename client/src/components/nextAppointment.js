@@ -30,7 +30,7 @@ export default function NextAppointment(props) {
 				<ListItem dense key='nextApointment' style={{textAlign: 'start'}}>
 					<ListItemText
 						primary='פגישה הבאה'
-						secondary={props.appointments[0] || 'אין פגישות ביומן!'}
+						secondary={( props.appointments[0] && props.appointments[0].startTime ) || 'אין פגישות ביומן!'}
 					/>
 					<Tooltip title="הוסף פגישה" >
 							<IconButton onClick={props.handleClick} >
@@ -42,7 +42,7 @@ export default function NextAppointment(props) {
 					<ExpansionPanelDetails>
 						{props.appointments.length > 1 && <div>
 						<Typography  variant="title"> פגישות הבאות: </Typography>
-							{ props.appointments.map( (appointment, index) => <Typography align="right" key={index}>{appointment}</Typography> ) }
+							{ props.appointments.map( (appointment, index) => <Typography align="right" key={index}>{appointment.startTime}</Typography> ) }
 						</div>}
 					</ExpansionPanelDetails>
 				<Dialog scroll='paper' open={props.open} onClose={props.handleClose}>
@@ -52,7 +52,7 @@ export default function NextAppointment(props) {
 						<DialogContent>
 							<List dense={true}>
 								{!props.error && props.availableAppointments.map((appointment, index) => 
-									<ListItem color={iconColor(appointment, props.newAppointment.time)} key={index}>
+									<ListItem color={iconColor(appointment.startTime, props.newAppointment.time)} key={index}>
 										<ListItemText >{appointment}</ListItemText>
 										<ListItemSecondaryAction>
 											<IconButton color={iconColor(appointment, props.newAppointment.time)} onClick={ ()=> props.handleChange({type: "time",value: appointment}) } >
