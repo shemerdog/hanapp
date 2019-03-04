@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const serverLogic = require('./serverlogic')
+const serverLogic = require('./serverlogic');
 
 // const listEvents = require('./googlecalendar.js');
 
@@ -22,8 +22,8 @@ app.get('/api/available-appointments', (req, res) => {
 });
 
 app.get('/api/patient-appointments', (req, res) => {
-	const userID = req.query.userid
-	const patientId = req.query.patientid
+	const userID = req.query.userid;
+	const patientId = req.query.patientid;
 	const method = req.query.method;
 	console.log('api patient-appointments called');
 	serverLogic.getPatientAppointmentsFromDb(res, userID, patientId, method);
@@ -31,8 +31,8 @@ app.get('/api/patient-appointments', (req, res) => {
 
 
 app.get('/api/patient-details', (req, res) => {
-	const userID = req.query.userid
-	const patientId = req.query.patientid
+	const userID = req.query.userid;
+	const patientId = req.query.patientid;
 	console.log('api patient-details called');
 	serverLogic.getPatientDataFromDb(res, userID, patientId);
 });
@@ -65,7 +65,7 @@ app.post('/api/submit-patient-form', (req, res) => {
 });
 
 app.post('/api/submit-patient-appointment', (req, res) => {
-	console.log("new patient appointment required: " + req.body.appointment)
+	console.log("new patient appointment required: " + req.body.appointment);
 	serverLogic.submitAppointmentToDb(req, res);
 });
 
