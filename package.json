@@ -1,11 +1,18 @@
 {
   "name": "hanapp-react-app-express",
   "version": "1.0.0",
+
+  "engines": {
+    "node": "8.10.0"
+  },
+
   "scripts": {
     "client": "cd client && npm start",
+    "heroku-postbuild": "cd client && npm run build",
     "server": "nodemon ./server/server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run-script server\" \"npm run-script client\""
   },
+
   "dependencies": {
     "array.prototype.flat": "^1.2.1",
     "bluebird": "^3.5.3",
@@ -14,7 +21,20 @@
     "googleapis": "^27.0.0",
     "moment": "^2.24.0",
     "mongojs": "^2.6.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "@material-ui/core": "^3.0.3",
+    "@material-ui/icons": "^3.0.1",
+    "@material-ui/lab": "^3.0.0-alpha.15",
+    "final-form": "^4.11.0",
+    "react": "^16.8.3",
+    "react-big-calendar": "^0.20.3",
+    "react-dom": "^16.8.3",
+    "react-google-login": "^4.0.0",
+    "react-facebook-login": "^4.1.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.5",
+    "react-swipeable-views": "^0.13.1",
+    "react_google_calendar": "^2.2.3"
   },
   "devDependencies": {
     "concurrently": "^3.6.1"
