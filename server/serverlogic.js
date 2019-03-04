@@ -3,7 +3,11 @@ const mongojs = require('mongojs');
 
 mongojs.Promise = global.Promise;
 
-var Db = mongojs('hanapp', ['appointments', 'users', 'settings']);
+const databaseUrl = process.env.MONGODB_URI; // "username:password@example.com/mydb"
+const collections = ['appointments', 'users', 'settings'];
+const Db = mongojs(databaseUrl, collections);
+
+// var Db = mongojs('hanapp', ['appointments', 'users', 'settings']);
 
 const defaultCalendarSettings = {
 	_id: 1,

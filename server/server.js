@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const serverLogic = require('./serverlogic')
 
 // const listEvents = require('./googlecalendar.js');
@@ -8,6 +9,7 @@ const port = process.env.PORT || 3001;
 
 
 const app = express();
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -71,6 +73,13 @@ app.post('/api/submit-appointment-summary', (req, res) => {
 	console.log("appointment-summary called: " + (req.body.appointment && req.body.startTime) );
 	serverLogic.updateAppointmentSummary(req, res);
 });
+
+// Till here API paths
+
+
+//Serving static files
+
+app.get('/*', function(req, res) { res.sendFile(path.join(__dirname, '../client/build', 'index.html')); });
 
 //listen//
 app.listen(port, () => {
