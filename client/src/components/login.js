@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import FacebookLogin from "react-facebook-login";
+import '../tools/login.css';
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 import GoogleLogin from 'react-google-login';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -97,11 +98,11 @@ class Login extends Component {
 							onClick={this.props.loginData.startLoading}
 							appId="384903288929031"
 							autoLoad={false}
-							size="big"
 							fields="name,email,picture"
-							textButton="Login with Facebook"
-							onFailure={()=>{return} }
 							callback={this.handleFBClick}
+							render={renderProps => (
+								<button onClick={renderProps.onClick} className="loginBtn loginBtn--facebook">Login with Facebook</button>
+							)}
 						/>
 					</div>
 					<div>
@@ -110,6 +111,9 @@ class Login extends Component {
 							clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
 							onSuccess={this.handleGoogleClick}
 							onFailure={(res)=>{console.log(res)} }
+							render={renderProps => (
+								<button onClick={renderProps.onClick} className="loginBtn loginBtn--google">Login with Google</button>
+							)}
 						/>
 					</div>
 				</Paper>
