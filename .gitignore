@@ -1,3 +1,4 @@
+
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 #build
@@ -5,7 +6,10 @@ client/build
 
 # dependencies
 /node_modules
-client/node_modules
+client/node_modules/*
+!client/node_modules/react-google-login
+client/node_modules/react-google-login/*
+!client/node_modules/react-google-login/dist
 
 # testing
 /coverage

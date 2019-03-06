@@ -97,7 +97,7 @@ class Login extends Component {
 							onClick={this.props.loginData.startLoading}
 							appId="384903288929031"
 							autoLoad={false}
-							size="medium"
+							size="big"
 							fields="name,email,picture"
 							textButton="Login with Facebook"
 							onFailure={()=>{return} }
