@@ -10,4 +10,17 @@ export default  createMuiTheme({
       main: '#FF1744',
     },
   },
+  overrides: {
+  	MuiInputLabel: {
+  		formControl: {
+  			left: 'auto',
+  			right: 0,
+  		}
+  	},
+    MuiListItem: {
+      root: {
+        textAlign: 'start'
+      }
+    }
+  }
 });

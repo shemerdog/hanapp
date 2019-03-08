@@ -21,9 +21,6 @@ const styles = {
 		maxWidth: 360,
 		margin: 'auto',
 	},
-	ListItem: {
-		textAlign: 'start'
-	}
 };
 
 class PatientsList extends Component {
@@ -84,7 +81,7 @@ class PatientsList extends Component {
 		return listData.map( (item, index) => {
 			return(
 				<Link key={index} to={'/patient/' + item.id}>
-					<ListItem button style={styles.ListItem}>
+					<ListItem button >
 						<Avatar>
 							<Face />
 						</Avatar>

@@ -1,0 +1,18 @@
+/*.practices-container{
+	width:100%;
+}*/
+
+.practices__menu{
+	display: contents;
+}
+.practices__menu .practices__menu-list{
+	max-height: 300px;
+}
+
+.practices__option{
+	text-align: center;
+}
+
+.fill-width{
+	width: 100%;
+}

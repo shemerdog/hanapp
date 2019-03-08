@@ -26,8 +26,8 @@ const iconColor = function(time, time2){
 export default function NextAppointment(props) {
 	return (
 		<ExpansionPanel >
-					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-				<ListItem dense key='nextApointment' style={{textAlign: 'start'}}>
+			<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+				<ListItem dense key='nextApointment'>
 					<ListItemText
 						primary='פגישה הבאה'
 						secondary={( props.appointments[0] && props.appointments[0].startTime ) || 'אין פגישות ביומן!'}

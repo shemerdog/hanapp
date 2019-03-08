@@ -2,6 +2,7 @@ import React ,{ Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import CalendarSettingsIcon from '../tools/calendar-settings-icon'
+import CreatePractice from './CreatePractice'
 import CalendarSettings from './settings-components'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -11,7 +12,6 @@ import PersonPinIcon from '@material-ui/icons/PersonPin';
 const styles = {
 	container: {
 		width: '100%',
-		maxWidth: 600,
 		margin: 'auto',
 	}
 }
@@ -27,6 +27,7 @@ class Settings extends Component {
 
 	componentDidMount() {
 		this.props.data.setTitle("הגדרות");
+		this.setState({ settingsComponent: 0});
 	};
 
 	handleChange = (event, settingsComponent) => {
@@ -56,16 +57,17 @@ class Settings extends Component {
 								icon={<CalendarSettingsIcon x="0px" y="0px" width="24px" height="24px" viewBox="0 0 37.884 37.885" />}
 								label="לוח שנה" 
 								/>
-							<Tab icon={<FavoriteIcon />} label="משהו אחר" />
+							<Tab icon={<FavoriteIcon />} label="יצירת טיפול" />
 							<Tab icon={<PersonPinIcon />} label="עוד משהו" />
 						</Tabs>
 		        <SwipeableViews
 		          axis='x-reverse'
+		          disableLazyLoading={true}
 		          index={settingsComponent}
 		          onChangeIndex={this.handleChangeIndex}
 		        >
-							<CalendarSettings />
-	        		<div>Item Two</div>
+					<CalendarSettings />
+	        		<CreatePractice />
 	        		<div>Item Three</div>
 						</SwipeableViews>			
 					</div>
