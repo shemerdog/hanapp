@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const serverLogic = require("./serverlogic");
+const cors = require("cors");
 
 const port = process.env.PORT || 3001;
 
@@ -9,7 +10,8 @@ const app = express();
 const staticClientFilesPath = path.join(__dirname, "../client/build");
 app.use(express.static(staticClientFilesPath));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false})); // What does that mean? why do we need this?
+app.use(bodyParser.urlencoded({extended: false})); //praser for the req bodies
+app.use(cors({origin: "*", optionsSuccessStatus: 200}));
 
 // Defining GET requests
 // TODO: Consider using middleware for logging requests, like: https://github.com/expressjs/morgan or https://github.com/winstonjs/winston
@@ -41,6 +43,16 @@ app.get( `${apiBaseURL}get-settings`, (req, res) => {
 	serverLogic.getSettings(res);
 });
 
+app.get('/api/get-practices-list', (req, res) => {
+	console.log('api get-practices-list called');
+	serverLogic.getPracticesListFromDb(res);
+});
+
+app.get('/api/get-practice-details', (req, res) => {
+	console.log('api get-practice-details called');
+	serverLogic.getPracticeDetails(req, res);
+});
+
 app.post(`${apiBaseURL}set-settings`, (req, res) => {
 	serverLogic.submitSettings(req, res);
 });
@@ -59,6 +71,13 @@ app.post("/api/submit-appointment-summary", (req, res) => {
 	console.log("appointment-summary called: " + (req.body.appointment && req.body.startTime) );
 	serverLogic.updateAppointmentSummary(req, res);
 });
+
+app.post('/api/submit-practice-form', (req, res) => {
+	const formMethod = req.body.formMethod;
+	serverLogic.submitPracticeFormToDb(req, res, formMethod);
+});
+
+app.post("/upload", serverLogic.upload); //upload files (src materials)
 
 // Till here API paths
 

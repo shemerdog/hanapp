@@ -19,9 +19,6 @@ const styles = {
 		maxWidth: 300,
 		margin: 'auto',
 	},
-	ListItem: {
-		textAlign: 'start'
-	},
 	button: {
 		margin: '0 2vw',
 	},
@@ -221,7 +218,7 @@ class patientDetails extends Component {
 								error={nextAppointmentsApiError}
 							/>
 							{ data.map( (item, index) => 
-								<ListItem dense button key={index} style={styles.ListItem}>
+								<ListItem dense button key={index}>
 									<ListItemText
 										primary={item.label}
 										secondary={item.value}

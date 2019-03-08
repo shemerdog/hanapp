@@ -1,5 +1,6 @@
 const moment = require("moment");
 const mongoJs = require("mongojs");
+const IncomingForm = require("formidable").IncomingForm;
 
 mongoJs.Promise = global.Promise;
 
@@ -12,6 +13,12 @@ const db = mongoJs(databaseUrl, collections );
 const appointments = db.collection( appointmentsCollectionName );
 const users = db.collection( usersCollectionName );
 const settings = db.collection( settingsCollectionName );
+db.on('connect', ()=>{
+console.log('database connected...');
+});
+db.on('error', (err)=>{
+console.log('database error: %s!!!', err);
+});
 
 const defaultCalendarSettings = {
 	_id: 1,
@@ -159,6 +166,29 @@ exports.getSettings = (res) => {
 	});
 };
 
+exports.getPracticesListFromDb = (res) => {
+	Db.practices.find({}, (err, docs) => {
+		let data = [];
+		docs.forEach( (item, index) => data.push({value: item._id, label: item.formData.name}))
+		console.log("practices list sent: ");
+		console.log(data)
+		res.send(data);
+	})
+};
+
+exports.getPracticeDetails = (req, res) => {
+	Db.practices.findOne({_id: req.query.practiceid}, (err,doc) => { // i used random codes, up to  uto keep them or not 
+		if (doc){
+			console.log("found doc" + req.query.practiceid)
+			res.send(doc);
+		}
+		else {
+			console.log(`didnt find practice ${req.query.practiceid}`)
+			res.send({});
+		};
+	})
+};
+
 exports.submitSettings = (req, res) => {
 	console.log(`Changing Settings:${req.body}`);
 	settings.update(
@@ -215,9 +245,28 @@ exports.submitAppointmentToDb = (req, res) => {
 
 exports.updateAppointmentSummary = (req, res) => {
 	console.log(req.body);
-	db.appointments.update( {startTime: req.body.startTime}, {$set: {summary: req.body.summary} }, {}, () => {
+	Db.appointments.update( {startTime: req.body.startTime}, {$set: {summary: req.body.summary, practices:req.body.practices } }, {}, () => {
 			console.log("appointment updated");
 	} );
 	res.send("appointment updated");
+};
+
+exports.submitPracticeFormToDb = (req,res) => {
+	const {formData, materialsData} = req.body;
+	console.log(`submitPracticeFormToDb: ${formData.proName}`)
+	// add check if already in DB
+	Db.practices.insert( {_id: formData.proName, formData: formData, materials: materialsData })
 }
 
+exports.upload = (req, res) => {
+  var form = new IncomingForm();
+
+  form.on("file", (field, file) => {
+    //some shit here...
+    console.log('${file.path} uploaded');
+  });
+  form.on("end", () => {
+    res.json();
+  });
+  form.parse(req);
+};
