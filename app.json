@@ -10,7 +10,8 @@
   "description": "",
   "env": {
     "MONGODB_URI": {
-      "required": true
+      "required": true,
+      "value": "mongodb://heroku_w8zrjtvt:hftqdit2dvhj8qbsl4tttanbae@ds047772.mlab.com:47772/heroku_w8zrjtvt"
     }
   },
   "formation": {

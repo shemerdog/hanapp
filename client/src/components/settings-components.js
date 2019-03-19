@@ -32,7 +32,7 @@ class CalendarSettings extends Component {
 		this.state = {
 			orgSettingObject: {},
 			settings: [
-			{key: 'freeDays', label: "ימים חופשיים", value: [0]},
+			{key: 'workingDays', label: "ימים חופשיים", value: [0]},
 			{key: 'workHours', label: "שעות עבודה", value: ['00:00','00:00'] },
 			{key: 'appointmentDuration', label: "אורך פגישה", value: 0},
 			],
