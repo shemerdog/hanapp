@@ -17,6 +17,8 @@
     "array.prototype.flat": "^1.2.1",
     "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "bunyan-request": "^1.4.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "final-form": "^4.11.0",
