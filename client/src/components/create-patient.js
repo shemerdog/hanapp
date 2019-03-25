@@ -4,7 +4,7 @@ import CreateOrEditProfile from './CreateOrEditProfile';
 
 function CreatePatient(props) {
 	if ( props.data.login === false ) {
-		return <Redirect to='/login' />
+		return <Redirect to='/login' />;
 	}
 	else {
 		return <CreateOrEditProfile setTitle={props.data.setTitle} actionType="create" profileType="patient" handleExit={()=>{props.history.push('/patients-list');}}/>
