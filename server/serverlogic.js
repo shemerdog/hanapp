@@ -2,23 +2,31 @@ const moment = require("moment");
 const mongoJs = require("mongojs");
 const IncomingForm = require("formidable").IncomingForm;
 
-mongoJs.Promise = global.Promise;
+const logger = require( './logger');
 
+mongoJs.Promise = global.Promise;
 const databaseUrl = process.env.MONGODB_URI; // "username:password@example.com/mydb"
 const appointmentsCollectionName = "appointments";
 const usersCollectionName = "users";
 const settingsCollectionName = "settings";
-const collections = [ appointmentsCollectionName, usersCollectionName, settingsCollectionName ];
+const practicesCollectionName = "practices";
+const collections = [ appointmentsCollectionName, usersCollectionName, settingsCollectionName, practicesCollectionName ];
+
 const db = mongoJs(databaseUrl, collections );
+
+db.on( 'connect', () => {
+	logger.info('Database Connected...');
+});
+
+db.on('error', (err) => {
+	logger.error('database error: %s!!!', err);
+	// TODO: Raise exception and close?
+});
+
 const appointments = db.collection( appointmentsCollectionName );
 const users = db.collection( usersCollectionName );
 const settings = db.collection( settingsCollectionName );
-db.on('connect', ()=>{
-console.log('database connected...');
-});
-db.on('error', (err)=>{
-console.log('database error: %s!!!', err);
-});
+const practices = db.collection( practicesCollectionName );
 
 const defaultCalendarSettings = {
 	_id: 1,
@@ -114,7 +122,7 @@ exports.getPatientAppointmentsFromDb = (res, userID, patientId, scope) => { // S
 };
 
 exports.getPatientAppointmentByDateFromDb = (res, userID, patientId, date) => {
-	db.appointments.findOne({id: patientId, startTime: date}, (err, doc) => {
+	appointments.findOne({id: patientId, startTime: date}, (err, doc) => {
 		console.log('%s patient appointment by date: ');
 			if(	doc){
 				console.log(doc);
@@ -167,17 +175,15 @@ exports.getSettings = (res) => {
 };
 
 exports.getPracticesListFromDb = (res) => {
-	Db.practices.find({}, (err, docs) => {
-		let data = [];
-		docs.forEach( (item, index) => data.push({value: item._id, label: item.formData.name}))
-		console.log("practices list sent: ");
-		console.log(data)
-		res.send(data);
-	})
+	practices.find({}, { formData: true }, (err, docs) => {
+		logger.info("Sent practices list");
+		logger.debug(docs);
+		res.send(docs);
+	});
 };
 
 exports.getPracticeDetails = (req, res) => {
-	Db.practices.findOne({_id: req.query.practiceid}, (err,doc) => { // i used random codes, up to  uto keep them or not 
+	practices.findOne({_id: req.query.practiceid}, (err,doc) => { // i used random codes, up to  uto keep them or not
 		if (doc){
 			console.log("found doc" + req.query.practiceid)
 			res.send(doc);

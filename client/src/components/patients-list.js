@@ -63,7 +63,7 @@ class PatientsList extends Component {
 	}
 
 	callApi = async () => {
-		const response = await fetch('/api/patientsList');
+		const response = await fetch('/api/patients-list');
 		const body = await response.json();
 		if (response.status !== 200) throw Error(body.message);
 		return body;

@@ -25,7 +25,7 @@ const styles = {
 	},
 };
 const tagsRegEx = /([\u0590-\u05FF\-a-zA-Z0-9]+)[^\u0590-\u05FF\-a-zA-Z0-9]*/g;
-const URLregex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+// const URLregex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g
 class CreatePractice extends Component {
 	
 	constructor(props) {
@@ -46,7 +46,7 @@ class CreatePractice extends Component {
 				{key: "tags", value: (props.data && props.data[5].value) || "", error: false, label:"תגיות", required: false, helperText:"תגית1,תגית2,תגית3...", style: styles.shortInput},
 			],
 			materials: 	[]
-		}
+		};
 
 		this.handleDataChange = this.handleDataChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -93,53 +93,41 @@ class CreatePractice extends Component {
 		});
 	};
 
-	validateForm() {
-		let formValid = true
+	validateField() {
+		let valid = true;
 		for (let item of this.state.practiceData) {
 				item.error = false;
 			if (item.required && item.value.length === 0) {
 				item.error = true;
 				item.helperText = "שדה חובה";
-				formValid = false;
-			}
-		}
-		return formValid;
-	};
-
-	validateMaterials() {
-		let valid = true
-		for (let item of this.state.materials) {
-				item.error = false;
-			if (item.type && item.value.length === 0) {
-				item.error = true;
-				item.helperText = "שדה ריק, הקלד כתובת או מחק שדה.";
 				valid = false;
 			}
 		}
 		return valid;
-	};
+	}
 
 	handleSubmit(e){
 		e.preventDefault();
 		let formValid;
 		this.setState({serverError: false, serverErrorDuplicate: false});
-		if(formValid = this.validateForm() && this.validateMaterials() ){
+		formValid = this.validateField( this.state.practiceData ) && this.validateField( this.state.materials );
+		if( formValid ) {
 			const formData = {};
 			const materialsData = {};
 			this.state.practiceData.forEach( item => {
 				if ( item.key === 'tags') {
-					item.value = item.value.replace(tagsRegEx, "\$1,").slice(0,-1);
+					item.value = item.value.replace(tagsRegEx, "$1,").slice(0,-1);
 				} 
 				formData[ item.key] =  item.value;
-			})
+			});
 			this.state.materials.forEach( item => {
 				if ( materialsData[ item.type] ){
 					materialsData[ item.type] += ", " + item.value
 				} else {
 					materialsData[ item.type] =  item.value;
 				}
-			})
-			this.setState({formValid})
+			});
+			this.setState({ formValid });
 			fetch('/api/submit-practice-form', {
 				method: 'POST',
 				headers: {

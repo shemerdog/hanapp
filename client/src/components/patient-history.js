@@ -193,7 +193,7 @@ class patientHistory extends Component {
 
 
 	callAppointmentsApi = async () => {
-		const response = await fetch( '/api/patient-appointments?userid=' + this.props.data.userID + '&patientid=' + this.props.match.params.patientId + '&method=history' );
+		const response = await fetch( '/api/patient-appointments?userID=' + this.props.data.userID + '&patientId=' + this.props.match.params.patientId + '&method=history' );
 		const body = await response.json();
 		if ( response.status !== 200) throw Error( body.message );
 		return body;

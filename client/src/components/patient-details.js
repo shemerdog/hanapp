@@ -124,7 +124,7 @@ class patientDetails extends Component {
 	}
 
 	deletePatient(){
-		fetch( '/api/delete-patient?patientid=' + this.props.match.params.patientId );
+		fetch( '/api/delete-patient?patientId=' + this.props.match.params.patientId );
 		this.props.history.push('/patients-list');
 	}
 
@@ -151,7 +151,8 @@ class patientDetails extends Component {
 	setFormData() {
 		this.callDetailsApi()
 		.then( res => {
-			res = res.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])})
+			// TODO: Move the sort to the db query like this: db.mycollection.find().sort({name: 1}, function (err, docs) etc...
+			res = res.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])});
 			this.setState({ data: res }) 
 		}, err => {
 				if (err.message === "not found") {
@@ -171,14 +172,14 @@ class patientDetails extends Component {
 
 
 	callDetailsApi = async () => {
-		const response = await fetch( '/api/patient-details?userid=' + this.props.data.userID + '&patientid=' + this.props.match.params.patientId );
+		const response = await fetch( '/api/patient-details?userID=' + this.props.data.userID + '&patientId=' + this.props.match.params.patientId );
 		const body = await response.json();
 		if ( response.status !== 200) throw Error( body.message );
 		return body;
 	};
 
 	callAppointmentsApi = async () => {
-		const response = await fetch( '/api/patient-appointments?userid=' + this.props.data.userID + '&patientid=' + this.props.match.params.patientId + '&method=next' );
+		const response = await fetch( '/api/patient-appointments?userID=' + this.props.data.userID + '&patientId=' + this.props.match.params.patientId + '&method=next' );
 		const body = await response.json();
 		if ( response.status !== 200) throw Error( body.message );
 		return body;
