@@ -1,7 +1,8 @@
 const moment = require("moment");
 const mongoJs = require("mongojs");
 const IncomingForm = require("formidable").IncomingForm;
-
+const {OAuth2Client} = require('google-auth-library');
+const {google} = require('googleapis');
 const logger = require( './logger');
 
 mongoJs.Promise = global.Promise;
@@ -11,8 +12,15 @@ const usersCollectionName = "users";
 const settingsCollectionName = "settings";
 const practicesCollectionName = "practices";
 const collections = [ appointmentsCollectionName, usersCollectionName, settingsCollectionName, practicesCollectionName ];
-
 const db = mongoJs(databaseUrl, collections );
+
+const CLIENT_ID = "492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com";
+const clientAuth = new OAuth2Client(CLIENT_ID);
+// TODO: Add client_secret and redirect_uris like here:
+// function authorize(credentials, callback) {
+// 	const {client_secret, client_id, redirect_uris} = credentials.installed;
+// 	const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+// }
 
 db.on( 'connect', () => {
 	logger.info('Database Connected...');
@@ -49,8 +57,18 @@ const patientLabels = { // get the labels back
 	"supervisorId": "מבוגר אחראי"
 };
 
+const verify = async (token) => {
+	const ticket = await clientAuth.verifyIdToken({
+	  idToken: token,
+	  audience: CLIENT_ID,
+	});
+	const payload = ticket.getPayload();
+	return payload.sub;
+};
+
+
 exports.init = (res) => {
-	db.settings.findOne({name: "calendarSettings"}, (err,doc) => { // TODO: Use consts
+	settings.findOne({name: "calendarSettings"}, (err,doc) => { // TODO: Use consts
 		if (doc){
 			calendarSettings = doc;
 		}
@@ -70,6 +88,46 @@ const therapistWorkingDays = function (date) {
 
 const checkBusy = (newTime) => (appointment) =>{
 	return ! moment(newTime).add(1,"ms").isBetween(appointment.startTime, appointment.endTime);
+};
+
+const storeToken = token => {
+	console.info('Token stored in DB');
+	console.debug( "Token:", JSON.stringify(token) );
+};
+
+exports.verifyAndStoreTokenId = (credentials) => {
+	// verify( credentials.tokenId ).then( ( tokenId ) => console.log(tokenId) );
+	clientAuth.getToken( credentials.code, (err, token) => {
+		if (err) { return console.error('Error retrieving access token', err); }
+		clientAuth.setCredentials(token);
+		storeToken( token );
+		// TODO: Learn and implement refreshing tokens
+		getNextTenEvent();
+	} );
+};
+
+const getNextTenEvent = () => {
+	const calendar = google.calendar({ version: 'v3', clientAuth }); // TODO: If everyone is using the same Oauth object how do we maintain different identities?!
+	calendar.events.list({
+		calendarId: 'primary',
+		timeMin: ( new Date() ).toISOString(),
+		maxResults: 10,
+		singleEvents: true,
+		orderBy: 'startTime',
+	}, (err, res) => {
+		if (err) { return console.log('The API returned an error: ' + err); }
+		const events = res.data.items;
+		if (events.length) {
+			console.log('Upcoming 10 events:');
+			events.map((event, i) => {
+				const start = event.start.dateTime || event.start.date;
+					console.log(`${start} - ${event.summary}`);
+				}
+			);
+		} else {
+			console.log('No upcoming events found.');
+		}
+	});
 };
 
 exports.getAvailableAppointmentsFromDb = (response, userID, date) => { // userID is the therapist id for future usage.
@@ -132,7 +190,7 @@ exports.getPatientAppointmentByDateFromDb = (res, userID, patientId, date) => {
 				res.status('444').json({message: "not found"});
 			}
 
-		})
+		});
 };
 
 exports.getPatientDataFromDb = (res, userID, patientId) => { //we use userId for permission or dedicated DB. we will not return it
@@ -185,14 +243,14 @@ exports.getPracticesListFromDb = (res) => {
 exports.getPracticeDetails = (req, res) => {
 	practices.findOne({_id: req.query.practiceid}, (err,doc) => { // i used random codes, up to  uto keep them or not
 		if (doc){
-			console.log("found doc" + req.query.practiceid)
+			console.log("found doc" + req.query.practiceid);
 			res.send(doc);
 		}
 		else {
-			console.log(`didnt find practice ${req.query.practiceid}`)
+			console.log(`didnt find practice ${req.query.practiceid}`);
 			res.send({});
-		};
-	})
+		}
+	});
 };
 
 exports.submitSettings = (req, res) => {
@@ -207,12 +265,12 @@ exports.submitSettings = (req, res) => {
 };
 
 exports.submitPatientFormToDb = (req, res, formMethod) => {
-	let newData = {}
+	let newData = {};
 		for (let item of req.body.formData){
 			newData[item.key] = item.value;
-		};
-		console.log("new patient data recevied: ")
-		console.log(newData)
+		}
+		console.log("new patient data recevied: ");
+		console.log(newData);
 		db.users.findOne( {id: newData.id}, (err,doc) => { // i used random codes, up to  uto keep them or not
 				if (doc){
 					if(formMethod === 'create'){	// create/edit
@@ -220,7 +278,7 @@ exports.submitPatientFormToDb = (req, res, formMethod) => {
 						res.status('444').send("patient already in database");
 					} else {
 						console.log("patient updated");
-						db.users.update({id: newData.id}, newData)
+						db.users.update({id: newData.id}, newData);
 						res.send("ok");
 					}
 				} else {
@@ -233,11 +291,11 @@ exports.submitPatientFormToDb = (req, res, formMethod) => {
 						res.status('445').send("patient not exist in database");
 					}
 				}
-	})
+	});
 };
 
 exports.submitAppointmentToDb = (req, res) => {
-	db.appointments.findOne( {startTime: req.body.appointment}, (err,doc) => {
+	appointments.findOne( {startTime: req.body.appointment}, (err,doc) => {
 		if (doc){
 			console.log("can't create new appointment, appointment already in database");
 			res.status('444').send("appointment already in database");
@@ -246,12 +304,12 @@ exports.submitAppointmentToDb = (req, res) => {
 			console.log("appointment added");
 			res.send("appointment added");
 		}
-	})
-}
+	});
+};
 
 exports.updateAppointmentSummary = (req, res) => {
 	console.log(req.body);
-	Db.appointments.update( {startTime: req.body.startTime}, {$set: {summary: req.body.summary, practices:req.body.practices } }, {}, () => {
+	appointments.update( {startTime: req.body.startTime}, {$set: {summary: req.body.summary, practices:req.body.practices } }, {}, () => {
 			console.log("appointment updated");
 	} );
 	res.send("appointment updated");
@@ -259,10 +317,10 @@ exports.updateAppointmentSummary = (req, res) => {
 
 exports.submitPracticeFormToDb = (req,res) => {
 	const {formData, materialsData} = req.body;
-	console.log(`submitPracticeFormToDb: ${formData.proName}`)
+	console.log(`submitPracticeFormToDb: ${formData.proName}`);
 	// add check if already in DB
-	Db.practices.insert( {_id: formData.proName, formData: formData, materials: materialsData })
-}
+	practices.insert( {_id: formData.proName, formData: formData, materials: materialsData });
+};
 
 exports.upload = (req, res) => {
   var form = new IncomingForm();

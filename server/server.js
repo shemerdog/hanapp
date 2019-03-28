@@ -27,6 +27,9 @@ app.use(cors({origin: "*", optionsSuccessStatus: 200})); // need to remove in pr
 // TODO: You should decide, either you are parsing request here or in the logic, but don't do both different requests mixed
 // TODO: Also if you're going with the separation of HTTP logic and application logic - I would have the serverLogic return a value and have the local functions here send it back to the client.
 app.post( path.join( apiBaseURL, "submit-credentials" ), (req, res) => {
+	// const testToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImE0MzEzZTdmZDFlOWUyYTRkZWQzYjI5MmQyYTdmNGU1MTk1NzQzMDgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNDkyNDg5OTUyMjIzLWhlYWl2aXZwZG41ZG5xdW42YWVybDQ1NmNscnNjbHNiLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNDkyNDg5OTUyMjIzLWhlYWl2aXZwZG41ZG5xdW42YWVybDQ1NmNscnNjbHNiLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE0OTQwNDY4NDA0NzQ0MzM5MzQ5IiwiaGQiOiJsYmQuY28uaWwiLCJlbWFpbCI6IlllaHVkYS5HQGxiZC5jby5pbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiN0ZoZl9qYm04MEVJRTlTaFN5MTdGZyIsIm5hbWUiOiJZZWh1ZGEgR2Vyc3RsZSIsInBpY3R1cmUiOiJodHRwczovL2xoNS5nb29nbGV1c2VyY29udGVudC5jb20vLVpTSGoxY3dwdHNJL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUxRL2YyY05KcGVnaWVZL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJZZWh1ZGEiLCJmYW1pbHlfbmFtZSI6IkdlcnN0bGUiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTU1Mzc3NDUxMywiZXhwIjoxNTUzNzc4MTEzLCJqdGkiOiJlNjBlYzMxM2EzODlmMjMzYjM4NTljMWU1NTM4ZmRiY2JmNGVjZDQ4In0.C7oZvEvDTxQaN8jsxj8nXxJXesa2Jld2X8Pnw_P1wcgwRL03trI7jRYOkmrFHiE02Q1TV2XY9R5mFnPIvrQGsskx5Ll8bpYCp8qDmq_78Luj9jYjhG6KOCZ-md9tvSkNQL5afL5C-_qAU5wx_yM4B2Us2Ki92FvDO3DS-EB5Q7qGUJLrCTKy_xLRGpDqtzQYQw_QiDWCmfMpNRiuCR1SB6MNPztjKmleZ2xKnPxGgXYd_l-qC6WNHlL4V-_kn5EiHDABsPLhroi0pRaHO9sKD3NhkuN6MdQ7IdZEtmuum_It_NUbG_GtdALOoouNaYLu1rGgNzPeCyi_M5znlevMXw";
+    // serverLogic.verifyAndStoreTokenId({ tokenId: testToken, email: "Y@lbd.co.il" });
+    serverLogic.verifyAndStoreTokenId(req.body);
 	console.log(req.body);
 });
 

@@ -73,11 +73,11 @@ class Login extends Component {
 	};
 	handleGoogleLogin = res => {
 		this.props.loginData.stopLoading();
-		const userData = res.profileObj;
+		// const userData = res.profileObj;
 		console.info("Got Google response");
 		console.debug( res );
-		this.sendAuthToServer( { tokenId: res.tokenId, email: res.profileObj.email });
-		this.props.loginData.handleLogin(userData.name, userData.googleId, userData.imageUrl, userData.email );
+		this.sendAuthToServer( res );
+		// this.props.loginData.handleLogin(userData.name, userData.googleId, userData.imageUrl, userData.email );
 	};
 
 	render() {
@@ -123,6 +123,8 @@ class Login extends Component {
 						<GoogleLogin
 							onClick={this.props.loginData.startLoading}
 							clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
+							scope="https://www.googleapis.com/auth/calendar"
+							responseType="code"
 							onSuccess={this.handleGoogleLogin}
 							onFailure={(res)=>{console.log(res)} }
 							render={renderProps => (
