@@ -65,10 +65,7 @@ class Login extends Component {
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
-			body: JSON.stringify({
-				tokenId: credentials.tokenId,
-				email: credentials.email
-			})
+			body: credentials
 		} );
 	};
 	handleGoogleLogin = res => {
