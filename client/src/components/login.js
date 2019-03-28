@@ -1,26 +1,26 @@
-import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
-import '../css/login.css';
+import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
+import "../css/login.css";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import GoogleLogin from 'react-google-login';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Avatar from '@material-ui/core/Avatar';
-import Paper from '@material-ui/core/Paper';
-import LockIcon from '@material-ui/icons/LockOutlined';
-import DialogTemplate from '../tools/dialog';
-import CircularProgress from '@material-ui/core/CircularProgress'
+import GoogleLogin from "react-google-login";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import Avatar from "@material-ui/core/Avatar";
+import Paper from "@material-ui/core/Paper";
+import LockIcon from "@material-ui/icons/LockOutlined";
+import DialogTemplate from "../tools/dialog";
+import CircularProgress from "@material-ui/core/CircularProgress"
 
 
 class Login extends Component {
 	constructor(props){
 		super(props);
 		this.state={
-			userName:'',
-			password:'',
+			userName:"",
+			password:"",
 			dialogOpen: false,
 		}
 		this.handleChange = this.handleChange.bind(this);
@@ -55,20 +55,34 @@ class Login extends Component {
 	handleFBClick = res => {
 		this.props.loginData.stopLoading()
 		console.log("got FB res");
-		console.log(res)
+		console.log(res);
 		this.props.loginData.handleLogin(res.name, res.userID, res.picture.data.url, res.email );
 	};
-	handleGoogleClick = res => {
-		this.props.loginData.stopLoading()
+	sendAuthToServer = credentials => {
+		const sendAuthDetailsApi = "/api/submit-credentials";
+		fetch( sendAuthDetailsApi, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			body: JSON.stringify({
+				tokenId: credentials.tokenId,
+				email: credentials.email
+			})
+		} );
+	};
+	handleGoogleLogin = res => {
+		this.props.loginData.stopLoading();
 		const userData = res.profileObj;
-		console.log("got google res");
-		console.log(res);
+		console.info("Got Google response");
+		console.debug( res );
+		this.sendAuthToServer( { tokenId: res.tokenId, email: res.profileObj.email });
 		this.props.loginData.handleLogin(userData.name, userData.googleId, userData.imageUrl, userData.email );
 	};
 
 	render() {
 		if (this.props.loginData.login === true) {
-			return <Redirect to='/patients-list' />
+			return <Redirect to="/patients-list" />
 		}
 		return (
 			<div>
@@ -109,7 +123,7 @@ class Login extends Component {
 						<GoogleLogin
 							onClick={this.props.loginData.startLoading}
 							clientId="492489952223-heaivivpdn5dnqun6aerl456clrsclsb.apps.googleusercontent.com"
-							onSuccess={this.handleGoogleClick}
+							onSuccess={this.handleGoogleLogin}
 							onFailure={(res)=>{console.log(res)} }
 							render={renderProps => (
 								<button onClick={renderProps.onClick} className="loginBtn loginBtn--google">Login with Google</button>
@@ -119,7 +133,7 @@ class Login extends Component {
 				</Paper>
 				<DialogTemplate
 				title="חבל מאוד!"
-				text='בעיה שלך, פעם הבאה אל תשכח.'
+				text="בעיה שלך, פעם הבאה אל תשכח."
 				open={this.state.dialogOpen}
 				onClose={this.closeDialog}
 				/>
@@ -132,6 +146,6 @@ const style = {
 	leftText: {textAlign: "center", margin: "auto",     width: "fit-content"},
 	paper: { padding: "2vh 2vw", margin: "10vh auto", width: "fit-content"},
 	avatar: {padding: "1vh",  margin: "auto"},
-	label: {width: '100%'}
+	label: {width: "100%"}
 };
 export default Login;

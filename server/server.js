@@ -26,6 +26,10 @@ app.use(cors({origin: "*", optionsSuccessStatus: 200})); // need to remove in pr
 // Defining GET requests
 // TODO: You should decide, either you are parsing request here or in the logic, but don't do both different requests mixed
 // TODO: Also if you're going with the separation of HTTP logic and application logic - I would have the serverLogic return a value and have the local functions here send it back to the client.
+app.post( path.join( apiBaseURL, "submit-credentials" ), (req, res) => {
+	console.log(req.body);
+});
+
 app.get( path.join( apiBaseURL, "available-appointments" ), (req, res) => {
 	serverLogic.getAvailableAppointmentsFromDb(res, req.query.userID, req.query.date);
 });
@@ -33,7 +37,6 @@ app.get( path.join( apiBaseURL, "available-appointments" ), (req, res) => {
 app.get( path.join( apiBaseURL, "patient-appointments" ), (req, res) => {
 	serverLogic.getPatientAppointmentsFromDb(res, req.query.userID, req.query.patientId, req.query.scope);
 });
-
 
 app.get( path.join( apiBaseURL, "patient-details" ), (req, res) => {
 	serverLogic.getPatientDataFromDb(res, req.query.userID, req.query.patientId);
@@ -52,7 +55,6 @@ app.get(  path.join( apiBaseURL, "get-settings" ), (req, res) => {
 });
 
 app.get( path.join( apiBaseURL, "get-practices-list" ), (req, res) => {
-	console.log('api get-practices-list called');
 	serverLogic.getPracticesListFromDb(res);
 });
 
