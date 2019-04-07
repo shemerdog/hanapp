@@ -6,7 +6,7 @@ import CreatePractice from './CreatePractice'
 import CalendarSettings from './settings-components'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import PlaylistAdd from '@material-ui/icons/PlaylistAdd';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
 
 const styles = {
@@ -17,7 +17,7 @@ const styles = {
 }
 
 class Settings extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -53,11 +53,11 @@ class Settings extends Component {
 							indicatorColor="secondary"
 							textColor="secondary"
 						>
-							<Tab 
+							<Tab
 								icon={<CalendarSettingsIcon x="0px" y="0px" width="24px" height="24px" viewBox="0 0 37.884 37.885" />}
-								label="לוח שנה" 
+								label="לוח שנה"
 								/>
-							<Tab icon={<FavoriteIcon />} label="יצירת טיפול" />
+							<Tab icon={<PlaylistAdd />} label="יצירת טיפול" />
 							<Tab icon={<PersonPinIcon />} label="עוד משהו" />
 						</Tabs>
 		        <SwipeableViews
@@ -69,7 +69,7 @@ class Settings extends Component {
 					<CalendarSettings />
 	        		<CreatePractice />
 	        		<div>Item Three</div>
-						</SwipeableViews>			
+						</SwipeableViews>
 					</div>
 				)
 		}

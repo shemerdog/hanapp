@@ -1,12 +1,14 @@
 import React ,{ Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import {callApi, postRequest} from '../tools/fetch-requests'
+import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {TextInput} from './CreateOrEditProfile';
+import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import LooksOne from '@material-ui/icons/LooksOne';
 import LooksTwo from '@material-ui/icons/LooksTwo';
@@ -22,11 +24,12 @@ const styles = {
 	},
 	horizonalSpacing: {
 		margin: "0 2vw",
-	}
+	},
+	selected: {color: "red"}
 }
 
 class CalendarSettings extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -95,34 +98,65 @@ class CalendarSettings extends Component {
 
 	render() {
 		const {settings} = this.state;
+		 const { classes } = this.props;
 		return (
 			<Fragment>
-				<ToggleButtonGroup selected={true} value={settings[0].value} onChange={this.handleFreeDays}>
-				<Typography style={styles.horizonalSpacing} align="right" variant="subheading">
-					ימים חופשיים
-				</Typography>
-					<ToggleButton value={0}>
-						<LooksOne />
-					</ToggleButton>
-					<ToggleButton value={1}>
-						<LooksTwo />
-					</ToggleButton>
-					<ToggleButton value={2}>
-						<Looks3 />
-					</ToggleButton>
-					<ToggleButton value={3}>
-						<Looks4 />
-					</ToggleButton>
-					<ToggleButton value={4}>
-						<Looks5 />
-					</ToggleButton>
-					<ToggleButton value={5}>
-						<Looks6 />
-					</ToggleButton>
-					<ToggleButton value={6}>
-						<Looks7 />
-					</ToggleButton>
-				</ToggleButtonGroup>
+				<Tooltip title="בחר את הימים בהם שאתה מתכוון לעבוד בהם">
+					<ToggleButtonGroup selected={true} value={settings[0].value} onChange={this.handleFreeDays}>
+					<Typography style={styles.horizonalSpacing} align="right" variant="subheading">
+						ימי עבודה בשבוע
+					</Typography>
+						<ToggleButton
+							classes={{
+					      selected: classes.selected
+	    				}}
+							value={0}>
+							<LooksOne />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={1}>
+							<LooksTwo />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={2}>
+							<Looks3 />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={3}>
+							<Looks4 />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={4}>
+							<Looks5 />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={5}>
+							<Looks6 />
+						</ToggleButton>
+						<ToggleButton
+						  classes={{
+						    selected: classes.selected
+						  }}
+						  value={6}>
+							<Looks7 />
+						</ToggleButton>
+					</ToggleButtonGroup>
+				</Tooltip>
 				<Paper style={styles.verticalSpacing}>
 					<Typography style={styles.horizonalSpacing} align="right" variant="subheading">
 						שעות עבודה
@@ -164,12 +198,11 @@ class CalendarSettings extends Component {
 					/>
 				</Paper>
 				<Button disabled={!this.validateForm} color="primary" onClick={this.handleSubmit}>
-					שמור 
+					שמור
 					<SaveIcon />
 				</Button>
 			</Fragment>
 		)
 	}
 }
-
-export default withRouter(CalendarSettings);
+export default withRouter(withStyles(styles)(CalendarSettings));

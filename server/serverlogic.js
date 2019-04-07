@@ -61,6 +61,7 @@ exports.init = (res) => {
 		if (doc){
 			calendarSettings = doc;
 		}
+		else { console.log("cant retrive calendarSettings");}
 	});
 };
 

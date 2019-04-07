@@ -69,7 +69,7 @@ function PatientHistoryPractices(props){
 }
 
 class patientHistory extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -96,7 +96,12 @@ class patientHistory extends Component {
 		this.getAppointmentsHistoryData();
 		fetch('/api/get-practices-list')
 		.then( (res) => res.json() )
-		.then( (res) => this.setState({practicesList: res}))
+		.then( (res) => {
+			const tempPracticesList = res.map( item => {
+				return { value: item._id, label: item.formData.name }
+			});
+			this.setState({practicesList: tempPracticesList});
+		});
 	}
 
 	getAppointmentsHistoryData = () => {
@@ -113,7 +118,7 @@ class patientHistory extends Component {
 			} else {
 				this.setState({apiError: "שגיאה לא מוכרת"} )
 			}
-	}); 
+	});
 };
 
 	handlePracticeChange (practiceSelectedOption) {
@@ -206,7 +211,7 @@ class patientHistory extends Component {
 					<div dir="rtl">
 					{apiError && <Typography color="error" variant="title">{apiError}</Typography>}
 					{appointments.length < 1 && <Typography color="error" variant="title"> {noAppointmentsMsg}</Typography>}
-					{ appointments.map( (item, index) => 
+					{ appointments.map( (item, index) =>
 						<ExpansionPanel key={index}  >
 							<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 								<div>{this.formatAppointmentHeader(item)}</div>
@@ -239,7 +244,7 @@ class patientHistory extends Component {
 					<Dialog scroll='paper' open={addPracticeDialog} onClose={this.handleToggleAddPracticeDialog}>
 						<DialogTitle style={{width: '65vw', textAlign: 'center'}} >הוספת תרגיל</DialogTitle>
 						<DialogContent>
-							<Select 
+							<Select
 								isMulti
 								className='practices-container'
 								classNamePrefix="practices"
