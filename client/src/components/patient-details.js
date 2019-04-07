@@ -34,7 +34,18 @@ const customSort = {
 	birthDate: 5,
 	email: 6,
 	address: 7,
-}
+};
+
+const patientLabels = { // get the labels back
+	"firstName": "שם פרטי",
+	"lastName": "שם משפחה",
+	"id": "ת.ז",
+	"phone": "טלפון",
+	"birthDate": "תאריך לידה",
+	"email": "מייל",
+	"address": "כתובת",
+	"supervisorId": "מבוגר אחראי"
+};
 
 const numToDay = {
 	0: "ראשון",
@@ -44,11 +55,12 @@ const numToDay = {
 	4: "חמישי",
 	5: "שישי",
 	6: "שבת",
-}
+};
+
 
 
 class patientDetails extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -88,7 +100,7 @@ class patientDetails extends Component {
 		this.setState({newAppointment:{time:'', date:''}, availableAppointments: []})
 		this.setFormData();
 	}
-	
+
 	handleAppointmentChange(target){
 		let change = {};
 		change.newAppointment = {...this.state.newAppointment};
@@ -114,6 +126,10 @@ class patientDetails extends Component {
 		}
 		this.setState(change)
 	};
+
+	parseDetailsServerResponse= res =>
+		Object.keys(res).map(item => {return { key: [item], value: res[item], label: patientLabels[item] }})
+		.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])});
 
 	exitDeleteDialog(){
 		this.setState({dialogDeleteOpen: false});
@@ -151,9 +167,8 @@ class patientDetails extends Component {
 	setFormData() {
 		this.callDetailsApi()
 		.then( res => {
-			// TODO: Move the sort to the db query like this: db.mycollection.find().sort({name: 1}, function (err, docs) etc...
-			res = res.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])});
-			this.setState({ data: res }) 
+			res = this.parseDetailsServerResponse(res)
+			this.setState({ data: res })
 		}, err => {
 				if (err.message === "not found") {
 					this.setState({patientDetailsApiError: "מטופל לא קיים במערכת או שאין לך הרשאה"} )
@@ -163,7 +178,7 @@ class patientDetails extends Component {
 		});
 		this.callAppointmentsApi()
 		.then( res => {
-			this.setState( { appointments: res.sort() } )} ) 
+			this.setState( { appointments: res.sort() } )} )
 	}
 
 	componentDidMount() {
@@ -199,7 +214,7 @@ class patientDetails extends Component {
 	render() {
 		const { data, appointments, availableAppointments, newAppointment, patientDetailsApiError, nextAppointmentsApiError, edit } = this.state;
 
-		
+
 				return (
 					<div dir="rtl">
 						<div>
@@ -218,7 +233,7 @@ class patientDetails extends Component {
 								newAppointment={newAppointment}
 								error={nextAppointmentsApiError}
 							/>
-							{ data.map( (item, index) => 
+							{ data.map( (item, index) =>
 								<ListItem dense button key={index}>
 									<ListItemText
 										primary={item.label}

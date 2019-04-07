@@ -6,14 +6,14 @@ function Picture(props) {
 	return <img
 						src={props.value}
 						alt={props.value}
-						width="100%" 
+						width="100%"
 						height="100%"
 						onError={(e)=>{e.target = <div>fail</div>}}
 						/>
 };
 
 function Video(props) {
-	if (props.value.indexOf("youtube")) return <iframe 	src={props.value}
+	if (props.value.indexOf("youtube") > -1) return <iframe 	src={props.value}
 									frameBorder='0'
 									width="100%"
 									height="100%"
@@ -21,7 +21,7 @@ function Video(props) {
 									allowFullScreen
 									title='video'
 					/>
-	else return <video controls width="100%"	height="100%" src={props.value} autoplay={false}>no audio support</video>
+				else return <video controls preload="none" width="100%"	height="100%" src={props.value} autoPlay={false}>no video support</video>
 };
 
 

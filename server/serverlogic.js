@@ -46,17 +46,6 @@ const defaultCalendarSettings = {
 
 let calendarSettings = defaultCalendarSettings;
 
-const patientLabels = { // get the labels back
-	"firstName": "שם פרטי",
-	"lastName": "שם משפחה",
-	"id": "ת.ז",
-	"phone": "טלפון",
-	"birthDate": "תאריך לידה",
-	"email": "מייל",
-	"address": "כתובת",
-	"supervisorId": "מבוגר אחראי"
-};
-
 const verify = async (token) => {
 	const ticket = await clientAuth.verifyIdToken({
 	  idToken: token,
