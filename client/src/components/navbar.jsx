@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import { Link } from 'react-router-dom'
+import { navbar as lang} from '../tools/lang.heb.js';
 import {AppBar} from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -31,7 +32,7 @@ class Navbar extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {	
+		this.state = {
 			dialogOpen: false
 		}
 	};
@@ -39,7 +40,7 @@ class Navbar extends Component {
 	closeDialog = () => {
 		this.setState({ dialogOpen: false });
 	};
- 
+
 	handleOnClick = (e) => {
 		if (!this.props.login){
 			e.preventDefault();
@@ -55,12 +56,12 @@ class Navbar extends Component {
 		if (this.props.login){
 			return (
 				<Fragment>
-					<Button style={styles.login} color="inherit" onClick={this.props.handleLogout}>Logout</Button>
+					<Button style={styles.login} color="inherit" onClick={this.props.handleLogout}>{lang.logoutLabel}</Button>
 					{ /*this.props.userPic && <img style={styles.avatar} src={this.props.userPic} alt={this.props.useName} height="42" width="42"/> */}
-					<div style={styles.welcome}>שלום {this.props.useName}</div>
+					<div style={styles.welcome}>{lang.greetingText + this.props.useName}</div>
 					</Fragment>
 			)
-		} else return( <Link to='/login' style={styles.login}><Button>Login</Button></Link>)
+		} else return( <Link to='/login' style={styles.login}><Button>{lang.loginLabel}</Button></Link>)
 	}
 
 	render(){
@@ -84,10 +85,10 @@ class Navbar extends Component {
 					open={this.state.dialogOpen}
 					onClose={this.closeDialog}
 				>
-					<DialogTitle>{"u not logged in"}</DialogTitle>
+					<DialogTitle>{lang.dialogTitle}</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
-							need to login for enter this page.
+							{lang.dialogText}
 						</DialogContentText>
 					</DialogContent>
 				</Dialog>

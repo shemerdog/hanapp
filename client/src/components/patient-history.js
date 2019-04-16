@@ -1,5 +1,6 @@
 import React ,{ Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
+import { patientHistory as lang, langCommon} from '../tools/lang.heb.js';
 import Select from 'react-select';
 import PracticeDetails from './PracticeDetails';
 import { postRequest } from '../tools/fetch-requests';
@@ -25,13 +26,13 @@ function PatientHistoryButtons(props) {
 	if (props.edit && props.index === props.selectedIndex) {
 		return (
 			<Fragment>
-				<Button size="small" onClick={() => props.handleCancel(props.index)}>ביטול</Button>
-				<Button size="small" onClick={props.openAddPractice}>הוסף תרגיל</Button>
-				<Button size="small" color="primary" onClick={ () => props.handleSave(props.index)}>שמור</Button>
+				<Button size="small" onClick={() => props.handleCancel(props.index)}>{langCommon.buttons.cancel}</Button>
+				<Button size="small" onClick={props.openAddPractice}>{lang.addPracticeLabel}</Button>
+				<Button size="small" color="primary" onClick={ () => props.handleSave(props.index)}>{langCommon.buttons.save}</Button>
 			</Fragment> )
 	}	else {
 		return (
-				<Button size="small" color="primary" onClick={() => props.handleEdit(props.index)}>ערוך</Button>
+				<Button size="small" color="primary" onClick={() => props.handleEdit(props.index)}>{langCommon.buttons.edit}</Button>
 		)
 	}
 };
@@ -43,7 +44,7 @@ function PatientHistoryContent(props) {
 			multiline
 			type="text"
 			id={props.index}
-			label="עריכת פגישה"
+			label={lang.editAppointmentLabel}
 			value={props.content}
 			onChange={props.handleContentChange}
 		/></div>)
@@ -61,7 +62,7 @@ function PatientHistoryPractices(props){
       />)}
 		</div>)
 	}	else return (<List style={{margin: "auto"}}>
-		<Typography >רשימת תרגילים</Typography>
+		<Typography >{lang.practiceListLabel}</Typography>
 		{props.practices.map((practice,index)=> <ListItem button onClick={ () => props.showDetails(practice.value)} key={index} >
 			<ListItemText	primary={practice.label}
 									/></ListItem>)}
@@ -114,9 +115,9 @@ class patientHistory extends Component {
 		this.setState( { appointments: res.sort( (a,b) => (a.startTime > b.startTime) ? 1 : -1 ) } )},
 		err => {
 			if (err.message === "not found") {
-				this.setState({apiError: "מטופל לא קיים במערכת או שאין לך הרשאה"} )
+				this.setState({apiError: langCommon.errorMsgs.notFound} )
 			} else {
-				this.setState({apiError: "שגיאה לא מוכרת"} )
+				this.setState({apiError: langCommon.errorMsgs.unknown} )
 			}
 	});
 };
@@ -177,7 +178,7 @@ class patientHistory extends Component {
 
 	parseSaveServerResponse = (res) => {
 		if(res.status !== 200)
-			this.setState({apiError: "השמירה בשרת נכשלה, בדוק חיבור לרשת או נסה שוב"})
+			this.setState({apiError: langCommon.errorMsgs.noConnection})
 	}
 
 	handleContentSave = (index) => {
@@ -206,11 +207,10 @@ class patientHistory extends Component {
 
 	render() {
 		const {  appointments, practicesList, apiError,  edit, addPracticeDialog, showPracticeDetailsDialog, practiceSelectedOption, selectedIndex, practiceDetailsObject } = this.state;
-		const noAppointmentsMsg = "אין פגישות בהיסטוריה!"
 				return (
 					<div dir="rtl">
 					{apiError && <Typography color="error" variant="title">{apiError}</Typography>}
-					{appointments.length < 1 && <Typography color="error" variant="title"> {noAppointmentsMsg}</Typography>}
+					{appointments.length < 1 && <Typography color="error" variant="title"> {lang.noAppointmentsErrorMsg}</Typography>}
 					{ appointments.map( (item, index) =>
 						<ExpansionPanel key={index}  >
 							<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -242,7 +242,7 @@ class patientHistory extends Component {
 						</ExpansionPanel>
 					)}
 					<Dialog scroll='paper' open={addPracticeDialog} onClose={this.handleToggleAddPracticeDialog}>
-						<DialogTitle style={{width: '65vw', textAlign: 'center'}} >הוספת תרגיל</DialogTitle>
+						<DialogTitle style={{width: '65vw', textAlign: 'center'}} >{lang.addPracticeLabel}</DialogTitle>
 						<DialogContent>
 							<Select
 								isMulti

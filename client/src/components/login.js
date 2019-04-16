@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { login as lang} from '../tools/lang.heb.js';
 import { Redirect } from "react-router-dom";
 import "../css/login.css";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
@@ -21,6 +22,7 @@ class Login extends Component {
 		this.state={
 			userName:"",
 			password:"",
+			loginError: false,
 			dialogOpen: false,
 		}
 		this.handleChange = this.handleChange.bind(this);
@@ -28,7 +30,7 @@ class Login extends Component {
 	};
 
 	componentDidMount() {
-		this.props.loginData.setTitle("hanApp");
+		this.props.loginData.setTitle(lang.header);
 	};
 
 	handleChange(event) {
@@ -41,6 +43,8 @@ class Login extends Component {
 		const {userName, password} = this.state;
 		if ( userName.length > 2  && password.length > 2 ) {
 			this.props.loginData.handleLogin(userName, "123", "");
+		} else {
+			this.setState({ loginError: true });
 		}
 	};
 
@@ -89,20 +93,23 @@ class Login extends Component {
 							<LockIcon />
 						</Avatar>
 					</div>
+					{this.state.loginError && <Typography  variant="caption" color='secondary' align="center">
+						{lang.loginErrorText}
+					</Typography>}
 					<FormControl style={style.margin}>
-						<InputLabel style={style.label} htmlFor="name-simple">שם משתמש</InputLabel>
+						<InputLabel style={style.label} htmlFor="name-simple">{lang.userNameLabel}</InputLabel>
 						<Input name="userName" value={this.state.userName} onChange={this.handleChange} />
 					</FormControl>
 					<br/>
 					<FormControl style={style.margin}>
-						<InputLabel style={style.label} htmlFor="pass-simple">סיסמה</InputLabel>
+						<InputLabel style={style.label} htmlFor="pass-simple">{lang.passwordLabel}</InputLabel>
 						<Input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
 					</FormControl>
 					<Typography style={style.leftText} variant="caption" onClick={this.openDialog}>
-						שכחת את הסיסמה?
+						{lang.forgotPasswordLabel}
 					</Typography>
 					<br/>
-					<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>התחבר</Button>
+					<Button variant="raised" style={style.margin} onClick={(event) => this.handleClick(event)}>{lang.loginButtonLabel}</Button>
 					{this.props.loginData.loading && <CircularProgress size={20}/>}
 					<div>
 						<FacebookLogin
@@ -112,7 +119,7 @@ class Login extends Component {
 							fields="name,email,picture"
 							callback={this.handleFBClick}
 							render={renderProps => (
-								<button onClick={renderProps.onClick} className="loginBtn loginBtn--facebook">Login with Facebook</button>
+								<button onClick={renderProps.onClick} className="loginBtn loginBtn--facebook">{lang.loginFacebookLabel}</button>
 							)}
 						/>
 					</div>
@@ -125,14 +132,14 @@ class Login extends Component {
 							onSuccess={this.handleGoogleLogin}
 							onFailure={(res)=>{console.log(res)} }
 							render={renderProps => (
-								<button onClick={renderProps.onClick} className="loginBtn loginBtn--google">Login with Google</button>
+								<button onClick={renderProps.onClick} className="loginBtn loginBtn--google">{lang.loginGoogleLabel}</button>
 							)}
 						/>
 					</div>
 				</Paper>
 				<DialogTemplate
-				title="חבל מאוד!"
-				text="בעיה שלך, פעם הבאה אל תשכח."
+				title={lang.dialogTitle}
+				text={lang.dialogText}
 				open={this.state.dialogOpen}
 				onClose={this.closeDialog}
 				/>

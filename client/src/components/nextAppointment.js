@@ -1,4 +1,5 @@
 import React from 'react';
+import { nextAppointment as lang} from '../tools/lang.heb.js';
 import List from '@material-ui/core/List';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -23,16 +24,21 @@ const iconColor = function(time, time2){
 	return time !== time2 ? "primary" : "secondary";
 }
 
+const getInputProps = () => {
+	const now = new Date();
+	return {min: now.toISOString().substring(0,10)}
+}
+
 export default function NextAppointment(props) {
 	return (
 		<ExpansionPanel >
 			<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-				<ListItem dense key='nextApointment'>
+				<ListItem dense key='nextAppointment'>
 					<ListItemText
-						primary='פגישה הבאה'
-						secondary={( props.appointments[0] && props.appointments[0].startTime ) || 'אין פגישות ביומן!'}
+						primary={lang.nextAppointmentLabel}
+						secondary={( props.appointments[0] && props.appointments[0].startTime ) || lang.noAppointmentsText}
 					/>
-					<Tooltip title="הוסף פגישה" >
+				<Tooltip title={lang.addAppointmentLabel} >
 							<IconButton onClick={props.handleClick} >
 								<AddIcon />
 							</IconButton>
@@ -41,17 +47,17 @@ export default function NextAppointment(props) {
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails>
 						{props.appointments.length > 1 && <div>
-						<Typography  variant="title"> פגישות הבאות: </Typography>
+						<Typography  variant="title">{lang.nextAppointmentsLabel}</Typography>
 							{ props.appointments.map( (appointment, index) => <Typography align="right" key={index}>{appointment.startTime}</Typography> ) }
 						</div>}
 					</ExpansionPanelDetails>
 				<Dialog scroll='paper' open={props.open} onClose={props.handleClose}>
-					<DialogTitle >קבע פגישה חדשה</DialogTitle>
-						<Input onChange={ (e)=> props.handleChange(e.target) } autoFocus={props.open} value={props.newAppointment.date} type='date'/>
+					<DialogTitle >{lang.addNewAppointmentLebel}</DialogTitle>
+						<Input onChange={ (e)=> props.handleChange(e.target) } autoFocus={props.open} value={props.newAppointment.date} inputProps={getInputProps()} type='date'/>
 						<br />
 						<DialogContent>
 							<List dense={true}>
-								{!props.error && props.availableAppointments.map((appointment, index) => 
+								{!props.error && props.availableAppointments.map((appointment, index) =>
 									<ListItem color={iconColor(appointment.startTime, props.newAppointment.time)} key={index}>
 										<ListItemText >{appointment}</ListItemText>
 										<ListItemSecondaryAction>
@@ -68,7 +74,7 @@ export default function NextAppointment(props) {
 					</DialogContent>
 					<DialogActions>
 						<Button disabled={!(props.newAppointment.date && props.newAppointment.time)} color="primary" onClick={props.handleSave}>
-							שמור פגישה
+							{lang.buttonSaveLabel}
 							<SaveIcon />
 						</Button>
 					</DialogActions>

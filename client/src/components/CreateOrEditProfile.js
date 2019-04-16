@@ -1,5 +1,6 @@
 import React ,{ Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { createPatient as lang} from '../tools/lang.heb.js';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -35,7 +36,7 @@ export const TextInput = function(props) {
 };
 
 class CreateOrEditProfile extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -45,13 +46,13 @@ class CreateOrEditProfile extends Component {
 			dialogOpen: false,
 			openSupervisorDialog: false,
 			patientData: [
-				{key: "firstName", value: (props.data && props.data[0].value) || "", error: false, label:"שם פרטי", required: true, type:"text", errorMsg:""},
-				{key: "lastName", value: (props.data && props.data[1].value) || "", error: false, label:"שם משפחה", required: true, type:"text", errorMsg:""},
-				{key: "id", value:(props.data && props.data[2].value) || "", error: false, label:"ת.ז", required: true, type:"number", errorMsg:""},
-				{key: "phone", value: (props.data && props.data[3].value) || "", error: false, label:"טלפון", required: true, type:"tel", errorMsg:""},
-				{key: "birthDate", value: (props.data && props.data[4].value) || "", error: false, label:"תאריך לידה", required: false, type:"date", errorMsg:""},
-				{key: "email", value: (props.data && props.data[5].value) || "", error: false, label:"מייל", required: false, type:"email", errorMsg:""},
-				{key: "address", value: (props.data && props.data[6].value) || "", error: false, label:"כתובת", required: false, type:"text", errorMsg:""},
+				{key: "firstName", value: (props.data && props.data[0].value) || "", error: false, label: lang.firstNameLabel, required: true, type:"text", errorMsg:""},
+				{key: "lastName", value: (props.data && props.data[1].value) || "", error: false, label: lang.lastNameLabel, required: true, type:"text", errorMsg:""},
+				{key: "id", value:(props.data && props.data[2].value) || "", error: false, label:lang.idLabel, required: true, type:"number", errorMsg:""},
+				{key: "phone", value: (props.data && props.data[3].value) || "", error: false, label:lang.phoneLabel, required: true, type:"tel", errorMsg:""},
+				{key: "birthDate", value: (props.data && props.data[4].value) || "", error: false, label: lang.birthDateLabel, required: false, type:"date", errorMsg:""},
+				{key: "email", value: (props.data && props.data[5].value) || "", error: false, label:lang.emailLabel, required: false, type:"email", errorMsg:""},
+				{key: "address", value: (props.data && props.data[6].value) || "", error: false, label:lang.addressLabel, required: false, type:"text", errorMsg:""},
 			],
 
 
@@ -90,11 +91,11 @@ class CreateOrEditProfile extends Component {
 				item.error = false;
 			if (item.required && item.value.length === 0) {
 				item.error = true;
-				item.errorMsg = "שדה חובה"
+				item.errorMsg = lang.requiredErrorMsg;
 			}
 			if ( item.type === "email" && item.value.length > 0 && !this.validateEmail(item.value) ) {
 				item.error = true;
-				item.errorMsg = "כתובת מייל לא תקינה"
+				item.errorMsg = lang.emailErrorMsg;
 			}
 			if (item.error){ formValid = false}
 		}
@@ -125,14 +126,14 @@ class CreateOrEditProfile extends Component {
 	};
 
 	handleSupervisorExit(supervisorId){
-		const change = {key: "supervisorId", value: supervisorId, error: false, label:"ת.ז. מבוגר", required: false, type:"number", errorMsg:""};
+		const change = {key: "supervisorId", value: supervisorId, error: false, label:lang.supervisorIdLabel, required: false, type:"number", errorMsg:""};
 		this.setState( prevState => ({ patientData: prevState.patientData.concat([change])}) );
 		this.handleToggleSupervisorDialog();
 	}
 
 	createTitle(actionType, profileType){
-		const action = actionType === "create"?  "יצירת" : "עריכת";
-		const profile = profileType === "patient" ? "מטופל" : "מבוגר אחראי";
+		const action = actionType === "create"? lang.titleCreate : lang.titleEdit;
+		const profile = profileType === "patient" ? lang.titlePatient : lang.titleSupervisor;
 		return action + " " + profile;
 	};
 
@@ -166,22 +167,22 @@ class CreateOrEditProfile extends Component {
 						<form >
 							{patientData.map((item, index) => <TextInput key={index} id={index.toString()} {...item} handleChange={this.handleChange}/>)}
 							<Typography  variant="caption" color='secondary' align="center">
-								{!formValid && <span>תקן את השדות האדומים ונסה שוב!</span>}
-								{serverErrorDuplicate && <span>ת.ז. קיימת במערכת!</span>}
-								{serverError && <span>בעיה בשרתים, אנא נסה שוב או פנה לבוס המעצבן שלי</span>}
+								{!formValid && <span>{lang.invalidFormMsg}</span>}
+								{serverErrorDuplicate && <span>{lang.serverErrorDuplicateMsg}</span>}
+								{serverError && <span>{lang.serverErrorMsg}</span>}
 							</Typography>
 							<Button type="submit" variant="contained" style={styles.button} color="primary" onClick={this.handleSubmit}>
 								{this.createTitle(actionType, profileType)}
 								<SaveIcon />
 							</Button>
 							{ profileType === "patient" && actionType === "create" && <Button style={styles.button} color="secondary" onClick={this.handleToggleSupervisorDialog}>
-								יצירת מבוגר אחראי
+								{lang.titleCreate + " " + lang.titleSupervisor}
 								<PersonAdd />
 							</Button>}
 						</form>
 						<DialogTemplate
-							title="המידע נשלח"
-							text='יצרת מטופל חדש בהצלחה!'
+							title={lang.dialogTitle}
+							text={lang.dialogText}
 							open={this.state.dialogOpen}
 							onClose={this.closeDialog}
 						/>

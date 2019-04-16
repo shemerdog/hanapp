@@ -1,5 +1,6 @@
 import React ,{ Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { createPractice as lang} from '../tools/lang.heb.js';
 import CreatePracticeMaterials from './CreatePracticeMaterials'
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -27,7 +28,7 @@ const styles = {
 const tagsRegEx = /([\u0590-\u05FF\-a-zA-Z0-9]+)[^\u0590-\u05FF\-a-zA-Z0-9]*/g;
 // const URLregex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g
 class CreatePractice extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -36,14 +37,14 @@ class CreatePractice extends Component {
 			serverErrorDuplicate: false,
 			dialogOpen: false,
 			practiceData: [
-				{key: "proName", value: (props.data && props.data[0].value) || "", error: false, label:"שם מקצועי", required: true, helperText:"", style: styles.shortInput},
-				{key: "name", value:(props.data && props.data[2].value) || "", error: false, label:"שם התרגיל", required: true, helperText:"", style: styles.shortInput},
-				{key: "proDescription", value: (props.data && props.data[1].value) || "", error: false, label:"תיאור מקצועי", required: true, helperText:"", style: styles.longInput, multiline: true},
-				{key: "description", value: (props.data && props.data[3].value) || "", error: false, label:"תיאור התרגיל", required: true, helperText:"", style: styles.longInput, multiline: true},
-				{key: "purpose", value: (props.data && props.data[4].value) || "", error: false, label:"מטרת התרגיל", required: false, helperText:"", style: styles.longInput, multiline: true},
-				{key: "defaultDuration", value: (props.data && props.data[6].value) || "0", error: false, label:"משך התרגיל", required: false, helperText:"", style: styles.shortInput},
-				{key: "defaultRepeatition", value: (props.data && props.data[6].value) || "0", error: false, label:"מספר חזרות", required: false, helperText:"", style: styles.shortInput},
-				{key: "tags", value: (props.data && props.data[5].value) || "", error: false, label:"תגיות", required: false, helperText:"תגית1,תגית2,תגית3...", style: styles.shortInput},
+				{key: "proName", value: (props.data && props.data[0].value) || "", error: false, label:lang.proNameLabel, required: true, helperText:"", style: styles.shortInput},
+				{key: "name", value:(props.data && props.data[2].value) || "", error: false, label:lang.nameLabel, required: true, helperText:"", style: styles.shortInput},
+				{key: "proDescription", value: (props.data && props.data[1].value) || "", error: false, label:lang.proDescriptionLabel, required: true, helperText:"", style: styles.longInput, multiline: true},
+				{key: "description", value: (props.data && props.data[3].value) || "", error: false, label:lang.descriptionLabel, required: true, helperText:"", style: styles.longInput, multiline: true},
+				{key: "purpose", value: (props.data && props.data[4].value) || "", error: false, label:lang.purposeLabel, required: false, helperText:"", style: styles.longInput, multiline: true},
+				{key: "defaultDuration", value: (props.data && props.data[6].value) || "0", error: false, label:lang.defaultDurationLabel, required: false, helperText:"", style: styles.shortInput},
+				{key: "defaultRepeatition", value: (props.data && props.data[6].value) || "0", error: false, label:lang.defaultRepeatitionLabel, required: false, helperText:"", style: styles.shortInput},
+				{key: "tags", value: (props.data && props.data[5].value) || "", error: false, label:lang.tagsLabel, required: false, helperText:lang.tagsHelperText, style: styles.shortInput},
 			],
 			materials: 	[]
 		};
@@ -117,7 +118,7 @@ class CreatePractice extends Component {
 			this.state.practiceData.forEach( item => {
 				if ( item.key === 'tags') {
 					item.value = item.value.replace(tagsRegEx, "$1,").slice(0,-1);
-				} 
+				}
 				formData[ item.key] =  item.value;
 			});
 			this.state.materials.forEach( item => {
@@ -149,18 +150,18 @@ class CreatePractice extends Component {
 							)}
 							<Typography  variant="caption" color='secondary' align="center">
 								{!formValid && <span>תקן את השדות האדומים ונסה שוב!</span>}
-								{serverErrorDuplicate && <span>ת.ז. קיימת במערכת!</span>}
+								{serverErrorDuplicate && <span>lang.serverErrorDuplicateMsg</span>}
 								{serverError && <span>בעיה בשרתים, אנא נסה שוב או פנה לבוס המעצבן שלי</span>}
 							</Typography>
 							<div className="horizonal-margin">
-								<Typography style={{display: "inline-block", margin: "0 2vw"}} variant="title" align="center">הוסף מקורות</Typography>
+								<Typography style={{display: "inline-block", margin: "0 2vw"}} variant="title" align="center">{lang.addMaterialLabel}</Typography>
 								<Button variant="fab" mini onClick={this.addMaterialSrc} >
 									<AddIcon />
 								</Button>
 							</div>
 							<CreatePracticeMaterials index={10} materials={materials} handleDelete={this.deleteMaterialSrc} handleChange={this.handleMaterialChange}/>
 							<Button type="submit" variant="contained" style={styles.button} color="primary" onClick={this.handleSubmit}>
-								שמור
+								{lang.buttonSaveLabel}
 								<SaveIcon />
 							</Button>
 						</form>
@@ -170,4 +171,3 @@ class CreatePractice extends Component {
 }
 
 export default withRouter(CreatePractice);
-

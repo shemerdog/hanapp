@@ -1,5 +1,6 @@
 import React ,{ Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { patientDetails as lang, langCommon} from '../tools/lang.heb.js';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -35,29 +36,6 @@ const customSort = {
 	email: 6,
 	address: 7,
 };
-
-const patientLabels = { // get the labels back
-	"firstName": "שם פרטי",
-	"lastName": "שם משפחה",
-	"id": "ת.ז",
-	"phone": "טלפון",
-	"birthDate": "תאריך לידה",
-	"email": "מייל",
-	"address": "כתובת",
-	"supervisorId": "מבוגר אחראי"
-};
-
-const numToDay = {
-	0: "ראשון",
-	1: "שני",
-	2: "שלישי",
-	3: "רביעי",
-	4: "חמישי",
-	5: "שישי",
-	6: "שבת",
-};
-
-
 
 class patientDetails extends Component {
 
@@ -112,9 +90,9 @@ class patientDetails extends Component {
 				res => res.json()
 				)
 			.then( res => {
-				switch(res.message) {
+				switch(res.message) { // need to change this after sever side changes
 					case "free":
-						this.setState({nextAppointmentsApiError: "המטפל בחופש בימים אלו: " + res.days.map(num => numToDay[num])});
+						this.setState({nextAppointmentsApiError: "המטפל בחופש בימים אלו: " + res.days.map(num => lang.numToDay[num])});
 						break;
 					case "old":
 						this.setState({nextAppointmentsApiError: "תאריך זה עבר כבר"});
@@ -128,7 +106,7 @@ class patientDetails extends Component {
 	};
 
 	parseDetailsServerResponse= res =>
-		Object.keys(res).map(item => {return { key: [item], value: res[item], label: patientLabels[item] }})
+		Object.keys(res).map(item => {return { key: [item], value: res[item], label: lang.patientLabels[item] }})
 		.sort((a,b)=>{return (customSort[a.key]-customSort[b.key])});
 
 	exitDeleteDialog(){
@@ -170,10 +148,10 @@ class patientDetails extends Component {
 			res = this.parseDetailsServerResponse(res)
 			this.setState({ data: res })
 		}, err => {
-				if (err.message === "not found") {
-					this.setState({patientDetailsApiError: "מטופל לא קיים במערכת או שאין לך הרשאה"} )
+				if (err.message === "Not Found") {
+					this.setState({patientDetailsApiError: langCommon.errorMsgs.notFound} )
 				} else {
-					this.setState({patientDetailsApiError: "שגיאה לא מוכרת"} )
+					this.setState({patientDetailsApiError: langCommon.errorMsgs.unknown} )
 				}
 		});
 		this.callAppointmentsApi()
@@ -252,8 +230,8 @@ class patientDetails extends Component {
 							</Button>
 							</div>}
 						<DialogTemplate
-						title="מחיקת מטופל"
-						text='אתה בטוח שאתה רוצה למחוק?'
+						title={lang.dialogTitle}
+						text={lang.dialogText}
 						type='confirmation'
 						handleConfirmation={this.deletePatient}
 						open={this.state.dialogDeleteOpen}

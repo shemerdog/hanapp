@@ -1,6 +1,7 @@
 import React ,{ Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
+import { patient as lang, langCommon} from '../tools/lang.heb.js';
 import PatientDetails from './patient-details'
 import PatientHistory from './patient-history'
 import Tabs from '@material-ui/core/Tabs';
@@ -15,7 +16,7 @@ const styles = {
 }
 
 class Patient extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -24,7 +25,7 @@ class Patient extends Component {
 	};
 
 	componentDidMount() {
-		this.props.data.setTitle("פרטי מטופל");
+		this.props.data.setTitle(lang.header);
 	};
 
 	handleChange = (event, patientComponent) => {
@@ -50,10 +51,10 @@ class Patient extends Component {
 							indicatorColor="secondary"
 							textColor="secondary"
 						>
-							<Tab 
-								label="פרטים" 
+							<Tab
+								label={lang.detailsTabLabel}
 								/>
-							<Tab label="היסטורית פגישות" />
+							<Tab label={lang.historyTabLabel} />
 						</Tabs>
 						<SwipeableViews
 							axis='x-reverse'
@@ -62,7 +63,7 @@ class Patient extends Component {
 						>
 							<PatientDetails {...this.props} />
 							<PatientHistory {...this.props} />
-						</SwipeableViews>			
+						</SwipeableViews>
 					</div>
 				)
 		}
